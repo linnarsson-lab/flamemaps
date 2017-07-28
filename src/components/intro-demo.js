@@ -21,7 +21,7 @@ export class IntroDemo extends Component {
     let datamap = {};
     const dataselect = (
       <label>
-        Select data set: <select onChange={this.handleSelect}>
+        Select gene data: <select onChange={this.handleSelect}>
           {
             data.map((attr) => {
               console.log(attr)

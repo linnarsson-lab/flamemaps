@@ -168,19 +168,19 @@ class App extends PureComponent {
           The number of non-zero values, and how those values are distributed, are plotted as two separate things on a flame map; using an average would reduce these separate measurements to one number. They may be of use in exploratory data analysis situations where this distinction is important, conveying more raw information when dealing with grouped data than traditional bar graphs or heat maps.</p>
         <h2>Issues introduced by binning and averaging</h2>
         <p>
-          Three interactive plots should be displayed below, one bar graph, one heatmap, and one flame map (if they are not, you probably need to enable javascript). The plots show levels of gene expression in a selection of mouse cells.
+          Three interactive plots should be displayed below, one bar graph, one heatmap, and one flame map. The plots show levels of gene expression in a selection of mouse cells for a given gene.
         </p>
         <p>
-          Assuming you have enough screen resolution available, the plots should be 800 pixels wide, and for demonstration purposes the width of the bars is at least 4 pixels (if you are on a high density screen or use browser-zoom, we compensate for that). Remember those numbers for later. </p>
+          Assuming you have enough screen resolution available, the plots should be 800 pixels wide, and for demonstration purposes the width of the bars is at least four pixels (if you are on a high density screen or use browser-zoom, we compensate for that). Remember those numbers for later. </p>
         <p>Try changing the number of plotted cells, while predicting how different amounts of data affect the shape plot itself:</p>
         <IntroDemo amount={introDemoAmount} logScale={introDemoLogscale} />
         <p>
           Did you notice the change once the number of cells exceeds {introSetLink(200)}? You may want to increase the value one step at a time to really see the effect. How the graphs change when you wiggle the value around {introSetLink(300)} is also very revealing. And for the sake of completeness, try {introSetLink(2995)} to {introSetLink(3005)}. <i>(note: we are assuming you have 800 pixels available on your screen. If you are on a smaller screen, these effects will happen earlier and the numbers used in this article will be off. It is very hard to make dynamic plots behave robustly across media)</i>
         </p>
+        <h3>Large relative differences when averaging small bin sizes</h3>
         <p>
           Recall that we have 800 pixels available, and a minimum of four pixels per column. That means we can show at most 200 data points individually. Bigger data sets inevitably involve grouping the data. For the bar graph and heatmap we typically bin the data per column, then plot the average value of the bin.
         </p>
-        <h3>Large relative differences when averaging small bin sizes</h3>
         <p>
           Compare plotting {introSetLink(298)}, {introSetLink(299)}, and {introSetLink(300)} cells. In this range the bins alternate between one and two data points. Because it is one and a half times the amount of columns, a tiny bit of wiggling has a big effect on how the data is distributed. To make matters worse, for bar graphs and heat maps there is no direct visual way of telling how this data is distributed, hiding this from the reader. Admittedly, the examples are specifically chosen to maximise that effect, but it illustrates the point.
         </p>
@@ -192,7 +192,7 @@ class App extends PureComponent {
           <i>(Aside from using a log-scale, there are more sophisticated alternatives to averaging that can help as well, like <a href='https://skemman.is/handle/1946/15343'>Steinarsson's Largest Triangle Three Buckets algorithm</a>, but they have their own trade-offs)</i>
         </p>
         <h2>How flame maps attempt to address these issues</h2>
-        <p>The problems in the previous paragraph could be seen as simplified versions of the problems shown by <a href='https://en.wikipedia.org/wiki/Anscombe%27s_quartet'>Anscombe's Quartet</a>, or the more recent <a href='https://www.autodeskresearch.com/publications/samestats'>'Datasaurus Dozen'</a> by Matejka and Fitzmaurice. Like the graphs in these papers, the most straight-forward solution would be showing the raw data being binned.
+        <p>The problems in the previous paragraph could be seen as simplified versions of the problems highlighted by <a href='https://en.wikipedia.org/wiki/Anscombe%27s_quartet'>Anscombe's Quartet</a>, or the more recent <a href='https://www.autodeskresearch.com/publications/samestats'>'Datasaurus Dozen'</a> by Matejka and Fitzmaurice. Like the graphs in these papers, the most straight-forward solution would be showing the raw data being binned.
         </p>
         <h3>Make more use of space and colour</h3>
         <p>
@@ -276,7 +276,7 @@ class App extends PureComponent {
           They are, in our opinion, very simple to construct, to the point where we are still not sure if they are really novel or if we simply have not looked hard enough. If they do already exist under another name, and with implementations in major plotting packages, please let us know. It would make the people in our group very happy (see below).
         </p>
         <h2>Implementations</h2>
-        <p><i>For now, you're looking at it. Sorry. Flame maps were created for an as-of-now in-house data browser web app. For performance reasons they were implemented in raw javascript and html5 canvas (not even a framework like d3.js was used). This demo page is based on repurposed plotting code from that data browser. I do not know PyPlot, R or any other plotting library really, and currently don't have the time it would take to learn them well enough to implement these plots efficiently. So I figured it made more sense to write a convincing demonstration page and hope that  others will agree these plots are useful, in the hope that the various plotting library wizards out there take over from there. And then Gioele can stop wishing I'll learn how to use PyPlot to implement this for him - Job</i></p>
+        <p><i>For now, you're looking at it. Sorry. Flame maps were created for an as-of-now in-house web app. For performance reasons they were implemented in raw javascript and html5 canvas (not even a framework like d3.js was used). This demo page is based on repurposed plotting code from thos web app. I do not know PyPlot, R or any other plotting library really, and currently don't have the time it would take to learn them well enough to implement these plots efficiently. So I figured it made more sense to write a convincing demonstration page and hope that  others will agree these plots are useful, in the hope that the various plotting library wizards out there take over from there. And then Gioele can stop wishing I'll learn how to use PyPlot to implement this for him - Job</i></p>
         <h2>Interactive Demos</h2>
         <Demos />
       </article>
