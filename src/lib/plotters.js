@@ -460,7 +460,7 @@ function flamemapPainter(context, range, dataToColor) {
 		// If necessary, we'll pad it with a zero value.
 		const binSize = Math.ceil(data.length / width) | 0;
 
-		const flameHeight = context.height * 0.875;
+		const flameHeight = context.height * 0.9375;
 		// the thin heatmap strip
 		const heatmapHeight = context.height - (flameHeight | 0) - range.ratio;
 
@@ -530,7 +530,7 @@ function flamemapPainter(context, range, dataToColor) {
 		// slightly separate the heatmap from the flame-map with a faded strip
 		context.fillStyle = 'darkgray';
 		context.globalAlpha = 1;
-		context.fillRect(0, flameHeight, context.width, range.ratio*2);
+		context.fillRect(0, flameHeight, context.width, range.ratio|0);
 		context.globalAlpha = 1.0;
 	}
 }

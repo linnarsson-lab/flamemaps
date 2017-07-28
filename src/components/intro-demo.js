@@ -6,9 +6,7 @@ import InputNumber from 'rc-input-number'
 
 import { Plot } from './plot';
 
-import { makeAttr } from '../lib/util';
-
-import { attr_hexb } from '../lib/data';
+import { data } from '../lib/data';
 
 const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
 
@@ -16,29 +14,65 @@ export class IntroDemo extends Component {
   constructor(props) {
     super(props);
 
+    this.handleSelect = this.handleSelect.bind(this);
     this.handleAmount = this.handleAmount.bind(this);
     this.handleLog = this.handleLog.bind(this);
 
+    let datamap = {};
+    const dataselect = (
+      <label>
+        Select data set: <select onChange={this.handleSelect}>
+          {
+            data.map((attr) => {
+              console.log(attr)
+              datamap[attr.name] = attr;
+              return <option value={attr.name} selected={attr.name === 'Hexb'}>{attr.name}</option>;
+            })
+          }
+        </select>
+      </label>
+    );
+
     const amount = props.amount || 100;
     const logScale = props.logScale === undefined || props.logScale;
-    let attr = makeAttr(`Hexb, first ${amount} cells of 3005`, attr_hexb.arrayType, attr_hexb.data);
-    attr.data = attr.data.slice(0, amount);
+
+    const selected = data[12];
+    const attr = Object.assign({}, selected,
+      {
+        name: `${selected.name}, first ${amount} cells of 3005`,
+        data: selected.data.slice(0, amount),
+      }
+    );
 
     this.state = {
+      datamap,
+      dataselect,
+      selected,
       attr,
       amount,
       logScale,
     };
   }
 
+  handleSelect(event) {
+    const { amount, datamap } = this.state;
+    const selected = datamap[event.target.value || "Hexb"];
+    const attr = Object.assign({}, selected,
+      {
+        name: `${selected.name}, first ${amount} cells of 3005`,
+        data: selected.data.slice(0, amount),
+      });
+    this.setState({ selected, attr });
+  }
+
   handleAmount(value) {
     const amount = Math.max(Math.min(3005, value | 0), 100);
 
-    let { logScale, attr } = this.state;
-    attr = Object.assign({}, attr,
+    let { attr, selected } = this.state;
+    attr = Object.assign({}, selected,
       {
-        name: `Hexb, first ${amount} cells of 3005`,
-        data: attr_hexb.data.slice(0, amount),
+        name: `${selected.name}, first ${amount} cells of 3005`,
+        data: selected.data.slice(0, amount),
       })
 
     this.setState({ amount, attr })
@@ -48,19 +82,20 @@ export class IntroDemo extends Component {
     this.setState({ logScale: e.target.checked ? true : false })
   }
 
-  componentWillReceiveProps(nextProps){
-    if (nextProps.amount){
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.amount) {
       this.handleAmount(nextProps.amount);
     }
-    if (nextProps.logScale){
+    if (nextProps.logScale) {
       this.handleLog(nextProps.logScale);
     }
   }
 
-  render(){
-    const { attr, amount, logScale } = this.state;
+  render() {
+    const { dataselect, attr, amount, logScale } = this.state;
     return (
       <div>
+        {dataselect}
         <Plot
           attr={attr}
           key={'intro_demo_bar'}

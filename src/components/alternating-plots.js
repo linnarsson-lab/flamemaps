@@ -204,7 +204,7 @@ export class AlternatingPlots extends Component {
                      defaultValue={pixelScale}
                      value={pixelScale}
                   />
-                  <span>column size</span>
+                  <span>pixels/column</span>
                </label>
             </div>
             <div

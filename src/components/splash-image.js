@@ -10,31 +10,29 @@ export class SplashImage extends PureComponent {
     const {
     width,
       pixelScale,
-      logScale,
+      settings,
     } = this.props;
-    const settings = { logScale };
-    const watchedVal = `${width}${pixelScale}${logScale}`;
 
     return (
       <div>
+        <p><i>Bar graphs</i></p>
         <SplashBar
           width={width}
           pixelScale={pixelScale}
-          logScale={logScale}
+          settings={settings}
         />
-        <p><i>Bar graphs</i></p>
+        <p><i>Heat Maps</i></p>
         <SplashHeatmap
           width={width}
           pixelScale={pixelScale}
-          logScale={logScale}
+          settings={settings}
         />
-        <p><i>Heat Maps</i></p>
+        <p><i>Flame Maps</i></p>
         <SplashFlame
           width={width}
           pixelScale={pixelScale}
-          logScale={logScale}
+          settings={settings}
         />
-        <p><i>Flame Maps</i></p>
       </div>
     )
   }
@@ -45,9 +43,9 @@ export class SplashBar extends PureComponent {
     const {
       width,
       pixelScale,
-      logScale,
+      settings,
     } = this.props;
-    const watchedVal = `${width}${pixelScale}${logScale}`;
+    const watchedVal = `${width}${pixelScale}${settings}`;
 
     return (
       <div style={{ margin: '20px 0px 20px 0px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -57,7 +55,7 @@ export class SplashBar extends PureComponent {
               attr={attr}
               key={'demo_' + attr.name + '_bar'}
               modes={['Bar']}
-              settings={{logScale}}
+              settings={settings}
               pixelScale={pixelScale}
               watchedVal={watchedVal}
               style={{ margin: 5, width: width, height: 70, flex: 1 }} />
@@ -73,9 +71,9 @@ export class SplashHeatmap extends PureComponent {
     const {
       width,
       pixelScale,
-      logScale,
+      settings,
     } = this.props;
-    const watchedVal = `${width}${pixelScale}${logScale}`;
+    const watchedVal = `${width}${pixelScale}${settings}`;
 
     return (
       <div style={{ margin: '20px 0px 20px 0px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -85,7 +83,7 @@ export class SplashHeatmap extends PureComponent {
               attr={attr}
               key={'demo_' + attr.name + '_heatmap'}
               modes={['Heatmap']}
-              settings={{logScale}}
+              settings={settings}
               pixelScale={pixelScale}
               watchedVal={watchedVal}
               style={{ margin: 5, width: width, height: 70, flex: 1 }} />
@@ -101,9 +99,9 @@ export class SplashFlame extends PureComponent {
     const {
       width,
       pixelScale,
-      logScale,
+      settings,
     } = this.props;
-    const watchedVal = `${width}${pixelScale}${logScale}`;
+    const watchedVal = `${width}${pixelScale}${settings}`;
 
     return (
       <div style={{ margin: '20px 0px 20px 0px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -113,7 +111,7 @@ export class SplashFlame extends PureComponent {
               attr={attr}
               key={'demo_' + attr.name + '_flame'}
               modes={['Flame']}
-              settings={{logScale}}
+              settings={settings}
               pixelScale={pixelScale}
               watchedVal={watchedVal}
               style={{ margin: 5, width: width, height: 70, flex: 1 }} />
