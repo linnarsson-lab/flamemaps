@@ -21,6 +21,7 @@ export class Demos extends Component {
       this.handleBarToggle = this.handleBarToggle.bind(this);
       this.handleHeatmapToggle = this.handleHeatmapToggle.bind(this);
       this.handleFlameToggle = this.handleFlameToggle.bind(this);
+      this.handleEmphNZToggle = this.handleEmphNZToggle.bind(this);
 
       this.makeControls = this.makeControls.bind(this);
 
@@ -29,6 +30,7 @@ export class Demos extends Component {
          pixelScale: 1,
          roundedPixelScale: 1,
          logScale: true,
+         emphasizeNonZero: true,
          arrangeByGene: false,
          showBar: true,
          showHeatmap: true,
@@ -76,6 +78,9 @@ export class Demos extends Component {
       this.setState({ showFlame: e.target.checked ? true : false });
    }
 
+   handleEmphNZToggle(e, checked) {
+      this.setState({ emphasizeNonZero: e.target.checked ? true : false });
+   }
    makeControls() {
       const {
          width,
@@ -84,6 +89,7 @@ export class Demos extends Component {
          showHeatmap,
          showFlame,
          logScale,
+         emphasizeNonZero,
          arrangeByGene,
       } = this.state;
       return (
@@ -168,12 +174,18 @@ export class Demos extends Component {
                </label>
                <label style={{ flex: 100, margin: '5px 25px 5px 25px' }}>
                   <Checkbox
+                     defaultChecked={emphasizeNonZero}
+                     checked={emphasizeNonZero}
+                     onChange={this.handleEmphNZToggle} />
+                  <span>emphasize non-zero</span>
+               </label>
+               <label style={{ flex: 100, margin: '5px 25px 5px 25px' }}>
+                  <Checkbox
                      defaultChecked={arrangeByGene}
                      checked={arrangeByGene}
                      onChange={this.handleByGene} />
                   <span>arrange per gene</span>
                </label>
-               <div style={{ flex: 100, margin: '5px 25px 5px 25px' }} />
             </div>
          </div>
       );
@@ -185,12 +197,13 @@ export class Demos extends Component {
          pixelScale,
          roundedPixelScale,
          logScale,
+         emphasizeNonZero,
          arrangeByGene,
          showBar,
          showHeatmap,
          showFlame,
       } = this.state
-      const settings = { logScale };
+      const settings = { logScale, emphasizeNonZero };
       const watchedVal = `${width}${pixelScale}${logScale}${arrangeByGene}`;
 
       const plots = arrangeByGene ? (

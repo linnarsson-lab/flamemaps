@@ -17,6 +17,7 @@ export class IntroDemo extends Component {
     this.handleSelect = this.handleSelect.bind(this);
     this.handleAmount = this.handleAmount.bind(this);
     this.handleLog = this.handleLog.bind(this);
+    this.handleEmphNZ = this.handleEmphNZ.bind(this);
 
     let datamap = {};
     const dataselect = (
@@ -34,7 +35,9 @@ export class IntroDemo extends Component {
     );
 
     const amount = props.amount || 100;
-    const logScale = props.logScale === undefined || props.logScale;
+    let { logScale, emphasizeNonZero } = props.settings || {};
+    logScale = logScale === undefined || logScale;
+    emphasizeNonZero = emphasizeNonZero === undefined || emphasizeNonZero;
 
     const selected = data[12];
     const attr = Object.assign({}, selected,
@@ -51,6 +54,7 @@ export class IntroDemo extends Component {
       attr,
       amount,
       logScale,
+      emphasizeNonZero,
     };
   }
 
@@ -82,6 +86,10 @@ export class IntroDemo extends Component {
     this.setState({ logScale: e.target.checked ? true : false })
   }
 
+  handleEmphNZ(e, checked){
+    this.setState({ emphasizeNonZero: e.target.checked ? true : false })
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.amount) {
       this.handleAmount(nextProps.amount);
@@ -92,7 +100,7 @@ export class IntroDemo extends Component {
   }
 
   render() {
-    const { dataselect, attr, amount, logScale } = this.state;
+    const { dataselect, attr, amount, logScale, emphasizeNonZero } = this.state;
     return (
       <div>
         {dataselect}
@@ -115,12 +123,12 @@ export class IntroDemo extends Component {
           key={'intro_demo_flame'}
           modes={['Flame']}
           pixelScale={4}
-          settings={{ logScale }}
+          settings={{ logScale, emphasizeNonZero }}
           style={{ height: '100px', margin: '5px 0px 5px 0px' }} />
         <div style={{ display: 'flex', flexDirection: 'row' }}>
           <SliderWithTooltip
             onChange={this.handleAmount}
-            style={{ flex: 450, margin: '10px 25px 10px 25px' }}
+            style={{ flex: 300, margin: '10px 25px 10px 25px' }}
             min={100}
             max={3005}
             defaultValue={amount}
@@ -140,6 +148,13 @@ export class IntroDemo extends Component {
               checked={logScale ? 1 : 0}
               onChange={this.handleLog} />
             <span>&nbsp;log<sub>2</sub> scale</span>
+          </label>
+          <label style={{ flex: 150, margin: '10px 25px 10px 25px' }}>
+            <Checkbox
+              defaultChecked={1}
+              checked={emphasizeNonZero ? 1 : 0}
+              onChange={this.handleEmphNZ} />
+            <span>&nbsp;emphasize non-zero</span>
           </label>
         </div>
       </div>

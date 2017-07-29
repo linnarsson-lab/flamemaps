@@ -47,8 +47,8 @@ export function sparkline(attr, mode, settings) {
 		min: attr.min,
 		max: attr.max,
 	};
-	if (sort){
-		range.data.sort((a, b) => ( a < b ? -sort : a > b ? sort : 0));
+	if (sort) {
+		range.data.sort((a, b) => (a < b ? -sort : a > b ? sort : 0));
 	}
 	const paint = selectPlotter(mode);
 
@@ -297,7 +297,7 @@ function stackedCategoriesPainter(context, range, dataToColor) {
 }
 
 function barPaint(context, range, _, settings) {
-	if (settings.logScale){
+	if (settings.logScale) {
 		_barPaintLog(context, range);
 	} else {
 		_barPaint(context, range);
@@ -312,7 +312,7 @@ function barPaint(context, range, _, settings) {
 	drawText(context, max.toPrecision(3), 4 * ratio, 2 + minmaxSize);
 }
 
-function _barPaint(context, range,){
+function _barPaint(context, range, ) {
 	const { means, barWidth } = calcMeans(range);
 	const max = range.max || 0;
 
@@ -352,7 +352,7 @@ function _barPaint(context, range,){
 	}
 }
 
-function _barPaintLog(context, range,){
+function _barPaintLog(context, range, ) {
 	const { means, barWidth } = calcMeans(range);
 	const max = range.max || 0;
 
@@ -412,8 +412,9 @@ function heatmapPainter(context, range, dataToColor) {
 	}
 }
 
-function flamemapPainter(context, range, dataToColor) {
+function flamemapPainter(context, range, dataToColor, settings) {
 	const { data, xOffset } = range;
+	const { emphasizeNonZero } = settings;
 	// Support high-density displays. However, we cut it by half
 	// to increase details a little bit.
 	// Downside: using browser-zoom scales up plots as well
@@ -453,16 +454,19 @@ function flamemapPainter(context, range, dataToColor) {
 		const barWidth = ratio;
 
 		// Because of rounding, our bins can come in two sizes.
-		// For small datasets this is a problem, because plotting
-		// a gradient for two or three cells gives a very result.
-		// to fix this, we always make the gradient as large as
-		// the largest bin size.
+		// For small datasets this is a problem: plotting a gradient
+		// for two or three cells gives a very different result.
+		// To fix this, we always make the gradient as large as the
+		// largest bin size.
 		// If necessary, we'll pad it with a zero value.
 		const binSize = Math.ceil(data.length / width) | 0;
 
-		const flameHeight = context.height * 0.9375;
-		// the thin heatmap strip
-		const heatmapHeight = context.height - (flameHeight | 0) - range.ratio;
+		let flameHeight = context.height, heatmapHeight = context.height;
+		if (emphasizeNonZero) {
+			flameHeight *= 0.9375;
+			// subtract ratio for the thin heatmap strip
+			heatmapHeight = context.height - (flameHeight | 0) - range.ratio;
+		}
 
 		context.fillStyle = '#e8e8e8';
 		context.fillRect(0, 0, context.width, context.height);
@@ -523,15 +527,19 @@ function flamemapPainter(context, range, dataToColor) {
 				context.fillRect(x, y, roundedWidth, roundedHeight);
 				j = k;
 			}
-			// draw strip to highlight max value, so dataset with
-			// sparse gene expression are more visible
-			context.fillRect(x, flameHeight, roundedWidth, heatmapHeight);
+			if (emphasizeNonZero) {
+				// draw strip to highlight max value, so dataset with
+				// sparse gene expression are more visible
+				context.fillRect(x, flameHeight, roundedWidth, heatmapHeight);
+			}
 		}
-		// slightly separate the heatmap from the flame-map with a faded strip
-		context.fillStyle = 'darkgray';
-		context.globalAlpha = 1;
-		context.fillRect(0, flameHeight, context.width, range.ratio|0);
-		context.globalAlpha = 1.0;
+		if (emphasizeNonZero) {
+			// slightly separate the heatmap from the flame-map with a faded strip
+			context.fillStyle = 'darkgray';
+			context.globalAlpha = 1;
+			context.fillRect(0, flameHeight, context.width, range.ratio | 0);
+			context.globalAlpha = 1.0;
+		}
 	}
 }
 
