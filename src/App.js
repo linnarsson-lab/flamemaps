@@ -4,14 +4,13 @@ import React, { PureComponent } from 'react';
 
 import Checkbox from 'rc-checkbox';
 
-import { Plot } from './components/plot';
-
 import { SplashImage, SplashFlame } from './components/splash-image';
 import { IntroDemo } from './components/intro-demo';
+
+import { SortedPlots } from './components/sorted-plots';
+import { UnsortedSortedPlots } from './components/unsorted-plots';
 import { AlternatingPlots } from './components/alternating-plots';
 import { Demos } from './components/demos';
-
-import { data } from './lib/data';
 
 class App extends PureComponent {
   constructor(props) {
@@ -19,33 +18,9 @@ class App extends PureComponent {
 
     this.handleIntroDemoAmount = this.handleIntroDemoAmount.bind(this);
     this.handleEmphNZ = this.handleEmphNZ.bind(this);
-    this.makeUnsortedPlots = this.makeUnsortedPlots.bind(this);
 
-
-    const sorted_example_data = [data[10], data[11], data[3], data[13], data[12]];
-
-    const sorted_plots = (
-      <div key={'sorted_plots'}>
-        {
-          sorted_example_data.map((attr) => (
-            <Plot
-              attr={attr}
-              key={'sorted_plots_' + attr.name}
-              modes={['Bars']}
-              pixelScale={1}
-              settings={{ sort: 1, logScale: true }}
-              style={{ height: '50px', margin: '5px 0px 5px 0px' }} />))
-        }
-      </div>
-    );
-
-    const unsorted_width = 100;
-    const unsorted_plots = this.makeUnsortedPlots(unsorted_width, sorted_example_data);
     this.state = {
       splashEmphNZ: true,
-      sorted_example_data,
-      sorted_plots,
-      unsorted_plots,
       showBar: true,
       showHeatmap: true,
       showFlame: true,
@@ -60,87 +35,10 @@ class App extends PureComponent {
     this.setState({ splashEmphNZ: e.target.checked ? true : false })
   }
 
-  makeUnsortedPlots(unsorted_width, sorted_example_data) {
-    const unsorted_plots_heatmap = (
-      <div key='unsorted_plots_heatmap' style={{ width: 140, margin: '0 auto' }}>
-        {
-          sorted_example_data.map((attr) => (
-            <Plot
-              attr={attr}
-              key={'unsorted_plots_heatmap' + attr.name}
-              modes={['Heatmap']}
-              watchedVal={unsorted_width}
-              settings={{ logScale: true }}
-              pixelScale={4}
-              style={{ height: '50px', margin: '5px 0px 5px 0px' }} />
-          ))
-        }
-      </div>
-    );
-
-    const unsorted_plots_bar = (
-      <div key='unsorted_plots_bar' style={{ width: 140, margin: '0 auto' }}>
-        {
-          sorted_example_data.map((attr) => (
-            <Plot
-              attr={attr}
-              key={'unsorted_plots_bar' + attr.name}
-              modes={['Bar']}
-              watchedVal={unsorted_width}
-              settings={{ logScale: true }}
-              pixelScale={4}
-              style={{ height: '50px', margin: '5px 0px 5px 0px' }} />
-          ))
-        }
-      </div>
-    );
-
-    const unsorted_plots_flame = (
-      <div key='unsorted_plots_flame' style={{ width: 140, margin: '0 auto' }}>
-        {
-          sorted_example_data.map((attr) => (
-            <Plot
-              attr={attr}
-              key={'unsorted_plots_flame' + attr.name}
-              modes={['Flame']}
-              watchedVal={unsorted_width}
-              settings={{ logScale: true, emphasizeNonZero: true }}
-              pixelScale={4}
-              style={{ height: '50px', margin: '5px 0px 5px 0px' }} />
-          ))
-        }
-      </div>
-    );
-    const unsorted_plots = (
-      <div
-        key='unsorted_plots_container'>
-        <div
-          key='unsorted_plots'
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-          }}>
-          <div style={{ flex: '1 1' }}>
-            {unsorted_plots_heatmap}
-          </div>
-          <div style={{ flex: '1 1' }}>
-            {unsorted_plots_bar}
-          </div>
-          <div style={{ flex: '1 1' }}>
-            {unsorted_plots_flame}
-          </div>
-        </div>
-      </div>
-    );
-    return unsorted_plots;
-  }
-
   render() {
     const {
       introDemoAmount,
       splashEmphNZ,
-      sorted_plots,
-      unsorted_plots,
     } = this.state;
 
     const introSetLink = (val) => {
@@ -180,11 +78,11 @@ class App extends PureComponent {
           Three interactive plots should be displayed below, one bar graph, one heatmap, and one flame map. The plots show levels of gene expression in a selection of mouse cells for a given gene.
         </p>
         <p>
-          Assuming you have enough screen resolution available, the plots should be 800 pixels wide, and for demonstration purposes the width of the columns is at least four pixels (if you are on a high density screen or use browser-zoom, we compensate for that). Remember those numbers for later. </p>
+          The plots should be 800 pixels wide, and for demonstration purposes the width of the columns is at least four pixels. <i>(we are assuming this is viewed on a screen enough resolution. We try to compensate for smaller screens, as well as browser-zoom and high density displays, but it might not be completely right. Our apologies, it is very hard to make dynamic plots behave the same across different media)</i></p>
         <p>Try changing the number of plotted cells, while predicting how different amounts of data affect the shape plot itself:</p>
         <IntroDemo amount={introDemoAmount} />
         <p>
-          Did you notice the change once the number of cells exceeds {introSetLink(200)}? You may want to increase the value one step at a time to really see the effect. How the graphs change when you wiggle the value around {introSetLink(300)} is also very revealing. And for the sake of completeness, try {introSetLink(2995)} to {introSetLink(3005)}. <i>(note: we are assuming this is viewed on a screen with 800 pixels available. On a smaller screen the numbers used in this article will be off; these effects will happen earlier. Our apologies, it is very hard to make dynamic plots behave the same across different media)</i>
+          Did you notice the change once the number of cells exceeds {introSetLink(200)}? You may want to increase the value one step at a time to really see the effect. How the graphs change when you wiggle the value around {introSetLink(300)} is also very revealing. And for the sake of completeness, try {introSetLink(2995)} to {introSetLink(3005)}.
         </p>
         <h3>Large relative differences when averaging small bin sizes</h3>
         <p>
@@ -242,11 +140,11 @@ class App extends PureComponent {
         <p>
           Even when showing sparsity and preventing deceptive averages is important, there might be simpler alternatives. When that is <i>all</i> that we want to know, we can also sort the data as a whole, instead of per column, which is an easier to interpret visual solution:
         </p>
-        {sorted_plots}
+        <SortedPlots />
         <p>
           However, when the order of data matters this is not an option. For example, if we want to compare which cluster of cells has high or low values across various genes, we need to keep a fixed order.
         </p>
-        {unsorted_plots}
+        <UnsortedSortedPlots />
         <h3>Aliasing issues</h3>
         <p>
           An underlying assumption for flame maps is that slightly displacing cells locally is not a problem, letting us get away with sorting the data by value in each column. This might not alwys be the case.

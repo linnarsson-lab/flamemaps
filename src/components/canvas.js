@@ -1,8 +1,6 @@
 import React, { PureComponent } from 'react';
 
-import {
-	RemountOnResize
-} from './remount';
+import { RemountOnResize } from './remount';
 
 class CanvasComponent extends PureComponent {
 
@@ -30,21 +28,24 @@ class CanvasComponent extends PureComponent {
 
 	constructor(props) {
 		super(props);
+		this.mountedView = this.mountedView.bind(this);
 		this.draw = this.draw.bind(this);
 	}
 
-	// Make sure we get a sharp canvas on Retina displays
-	// as well as adjust the canvas on zoomed browsers
-	// Does NOT scale; painter functions decide how to handle
-	// window.devicePixelRatio on a case-by-case basis
-	componentDidMount() {
-		const view = this.view;
-		const pixelScale = this.props.pixelScale || 1;
-		const ratio = window.devicePixelRatio || 1;
-		const width = (view.clientWidth * ratio) | 0;
-		const height = (view.clientHeight * ratio) | 0;
-		this.setState({ width, height, ratio, pixelScale });
+	mountedView(view) {
+		// Scaling lets us adjust the painter function for
+		// high density displays and zoomed browsers.
+		// Painter functions decide how to use scaling
+		// scaling on a case-by-case basis.
+		if (view) {
+			const pixelScale = this.props.pixelScale || 1;
+			const ratio = window.devicePixelRatio || 1;
+			const width = (view.clientWidth * ratio) | 0;
+			const height = (view.clientHeight * ratio) | 0;
+			this.setState({ view, width, height, ratio, pixelScale });
+		}
 	}
+
 
 	componentDidUpdate() {
 		if (this.props.redraw) {
@@ -56,8 +57,8 @@ class CanvasComponent extends PureComponent {
 		// The way canvas interacts with CSS layouting is a bit buggy
 		// and inconsistent across browsers. To make it dependent on
 		// the layout of the parent container, we only render it after
-		// mounting, that is: after CSS layouting is done.
-		const canvas = this.view ? (
+		// mounting view, that is: after CSS layouting is done.
+		const canvas = this.state && this.state.view ? (
 			<canvas
 				ref={(cv) => { this.canvas = cv; }}
 				width={this.state.width}
@@ -71,7 +72,7 @@ class CanvasComponent extends PureComponent {
 
 		return (
 			<div
-				ref={(view) => { this.view = view; }}
+				ref={this.mountedView}
 				style={this.props.style}
 			>
 				{canvas}
@@ -105,9 +106,9 @@ export class Canvas extends PureComponent {
 		}
 		return (
 			<RemountOnResize
-			/* Since canvas interferes with CSS layouting,
-			we unmount and remount it on resize events */
-			watchedVal={this.props.watchedVal}
+				/* Since canvas interferes with CSS layouting,
+				we unmount and remount it on resize events */
+				watchedVal={this.props.watchedVal}
 			>
 				<CanvasComponent
 					paint={this.props.paint}

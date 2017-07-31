@@ -17,7 +17,10 @@ export class RemountOnResize extends Component {
 		// triggers a resize event. In that case, we do not
 		// want to trigger the remount. Instead, we want
 		// to trigger a resize only when switching between
-		// portrait and landscape modes
+		// portrait and landscape modes.
+		// This assumes the keyboard does not take up more
+		// than half of the screen, which is not always
+		// true but it's a decent enough hack.
 		const resize = isMobile ? (
 			() => {
 				let isPortrait = window.innerHeight > window.innerWidth;
@@ -38,10 +41,10 @@ export class RemountOnResize extends Component {
 			}
 		);
 
-		// Because the resize event can fire very often, we
-		// add a debouncer to minimise pointless
-		// (unmount, resize, remount)-ing of the child nodes.
-		// We default to 200 ms
+		// Because the resize event can fire very often when
+		// dragging a window, we add a debouncer to minimise
+		// pointlessly unmounting, remounting and resizing
+		// of the child nodes, with 200 ms as the default
 		let delay = props.delay !== undefined ? props.delay : 200;
 		this.setResize = debounce(resize, delay);
 	}
@@ -64,7 +67,9 @@ export class RemountOnResize extends Component {
 
 	componentDidUpdate(prevProps, prevState) {
 		// Yes, this triggers another update.
-		// That is the whole point.
+		// That is the whole point: to cycle between
+		// unmounting and remounting upon certain
+		// triggers.
 		if (!prevState.resizing && this.state.resizing) {
 			this.setState({ resizing: false });
 		}

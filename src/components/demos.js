@@ -4,6 +4,8 @@ import Checkbox from 'rc-checkbox';
 import Slider from 'rc-slider';
 import InputNumber from 'rc-input-number'
 
+import { RemountOnResize } from './remount';
+
 import { Plot } from './plot';
 
 import { data } from '../lib/data';
@@ -22,11 +24,16 @@ export class Demos extends Component {
       this.handleHeatmapToggle = this.handleHeatmapToggle.bind(this);
       this.handleFlameToggle = this.handleFlameToggle.bind(this);
       this.handleEmphNZToggle = this.handleEmphNZToggle.bind(this);
+      this.mountedView = this.mountedView.bind(this);
 
       this.makeControls = this.makeControls.bind(this);
+      const ratio = window.devicePixelRatio || 1;
 
       this.state = {
-         width: 800,
+         containerWidth: 0,
+         ratio,
+         width: 200,
+         scaledWidth: 200,
          pixelScale: 1,
          roundedPixelScale: 1,
          logScale: true,
@@ -39,20 +46,22 @@ export class Demos extends Component {
    }
 
    handlewidth(value) {
-      const { pixelScale } = this.state;
-      const width = Math.max(70, Math.min(800, value | 0));
-      const roundedPixelScale = width / Math.ceil(width / pixelScale);
+      const { pixelScale, containerWidth, ratio } = this.state;
+      const width = Math.max(70, Math.min(800, value));
+      const scaledWidth = (width * containerWidth / (800*ratio)) | 0;
+      const roundedPixelScale = scaledWidth / Math.ceil(scaledWidth / pixelScale);
 
       this.setState({
          width,
+         scaledWidth,
          roundedPixelScale,
       });
    }
 
    handleDemoPixels(value) {
-      const { width } = this.state;
+      const { scaledWidth } = this.state;
       const pixelScale = Math.max(1, Math.min(40, value | 0));
-      const roundedPixelScale = width / Math.ceil(width / pixelScale);
+      const roundedPixelScale = scaledWidth / Math.ceil(scaledWidth / pixelScale);
 
       this.setState({
          pixelScale,
@@ -81,6 +90,7 @@ export class Demos extends Component {
    handleEmphNZToggle(e, checked) {
       this.setState({ emphasizeNonZero: e.target.checked ? true : false });
    }
+
    makeControls() {
       const {
          width,
@@ -92,9 +102,10 @@ export class Demos extends Component {
          emphasizeNonZero,
          arrangeByGene,
       } = this.state;
+
       return (
          <div>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                <SliderWithTooltip
                   onChange={this.handlewidth}
                   style={{ flex: 600, margin: '10px 25px 10px 25px' }}
@@ -118,7 +129,7 @@ export class Demos extends Component {
                </label>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                <SliderWithTooltip
                   onChange={this.handleDemoPixels}
                   style={{ flex: 600, margin: '10px 25px 10px 25px' }}
@@ -141,7 +152,7 @@ export class Demos extends Component {
                   <span>&nbsp;pixels/column</span>
                </label>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                <label style={{ flex: 100, margin: '5px 25px 5px 25px' }}>
                   <Checkbox
                      defaultChecked={showBar}
@@ -164,7 +175,7 @@ export class Demos extends Component {
                   <span>show flame maps</span>
                </label>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                <label style={{ flex: 100, margin: '5px 25px 5px 25px' }}>
                   <Checkbox
                      defaultChecked={logScale}
@@ -191,9 +202,22 @@ export class Demos extends Component {
       );
    }
 
+   mountedView(view) {
+      // Similar to the trick used in the Canvas component,
+      // this lets us scale below 800 pixels and still mainting
+      // _some_ form of consistency.
+      if (view) {
+         const ratio  =  window.devicePixelRatio || 1;
+         const containerWidth = (view.clientWidth * ratio) | 0;
+         this.setState({ view, ratio, containerWidth });
+      }
+   }
+
+
    render() {
       const {
-         width,
+         view,
+         scaledWidth,
          pixelScale,
          roundedPixelScale,
          logScale,
@@ -204,85 +228,94 @@ export class Demos extends Component {
          showFlame,
       } = this.state
       const settings = { logScale, emphasizeNonZero };
-      const watchedVal = `${width}${pixelScale}${logScale}${arrangeByGene}`;
+      const watchedVal = `${scaledWidth}${pixelScale}${logScale}${arrangeByGene}`;
 
-      const plots = arrangeByGene ? (
-         <div style={{ margin: '20px 0px 20px 0px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-            {
-               data.map((attr) => (
+      const plotStyle = { margin: 5, width: scaledWidth, height: 70, flex: 1 };
+      let plots;
+      if (view) {
+         plots = arrangeByGene ? (
+            <div style={{ margin: '20px 0px 20px 0px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+               {
+                  data.map((attr) => (
                      <div style={{ margin: '0px 0px 0px 0px', display: 'flex', flexDirection: 'column', flexWrap: 'none' }}>
-                        { showBar ? <Plot
+                        {showBar ? <Plot
                            attr={attr}
                            key={'demo_' + attr.name + '_bar'}
                            modes={['Bar']}
                            settings={settings}
                            pixelScale={roundedPixelScale}
                            watchedVal={watchedVal}
-                           style={{ margin: 5, width: width, height: 70, flex: 1 }} /> : null}
-                        { showHeatmap ? <Plot
+                           style={plotStyle} /> : null}
+                        {showHeatmap ? <Plot
                            attr={attr}
                            key={'demo_' + attr.name + '_heatmap'}
                            modes={['Heatmap']}
                            settings={settings}
                            pixelScale={roundedPixelScale}
                            watchedVal={watchedVal}
-                           style={{ margin: 5, width: width, height: 70, flex: 1 }} /> : null }
-                        { showFlame ? <Plot
+                           style={plotStyle} /> : null}
+                        {showFlame ? <Plot
                            attr={attr}
                            key={'demo_' + attr.name + '_flame'}
                            modes={['Flame']}
                            settings={settings}
                            pixelScale={roundedPixelScale}
                            watchedVal={watchedVal}
-                           style={{ margin: 5, width: width, height: 70, flex: 1 }} /> : null}
+                           style={plotStyle} /> : null}
                      </div>
-            ))}
-         </div>
-      ) : (
-            <div>
-               {showBar ? <div style={{ margin: '20px 0px 20px 0px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                  {data.map((attr) => (
-                     <Plot
-                        attr={attr}
-                        key={'demo_' + attr.name + '_bar'}
-                        modes={['Bar']}
-                        settings={settings}
-                        pixelScale={roundedPixelScale}
-                        watchedVal={watchedVal}
-                        style={{ margin: 5, width: width, height: 70, flex: 1 }} />
                   ))}
-               </div> : null}
-               {showHeatmap ? <div style={{ margin: '20px 0px 20px 0px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                  {data.map((attr) => (
-                     <Plot
-                        attr={attr}
-                        key={'demo_' + attr.name + '_heatmap'}
-                        modes={['Heatmap']}
-                        settings={settings}
-                        pixelScale={roundedPixelScale}
-                        watchedVal={watchedVal}
-                        style={{ margin: 5, width: width, height: 70, flex: 1 }} />
-                  ))}
-               </div> : null}
-               {showFlame ? <div style={{ margin: '20px 0px 20px 0px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                  {data.map((attr) => (
-                     <Plot
-                        attr={attr}
-                        key={'demo_' + attr.name + '_flame'}
-                        modes={['Flame']}
-                        settings={settings}
-                        pixelScale={roundedPixelScale}
-                        watchedVal={watchedVal}
-                        style={{ margin: 5, width: width, height: 70, flex: 1 }} />
-                  ))}
-               </div> : null}
             </div>
-         );
+         ) : (
+               <div>
+                  {showBar ? <div style={{ margin: '20px 0px 20px 0px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                     {data.map((attr) => (
+                        <Plot
+                           attr={attr}
+                           key={'demo_' + attr.name + '_bar'}
+                           modes={['Bar']}
+                           settings={settings}
+                           pixelScale={roundedPixelScale}
+                           watchedVal={watchedVal}
+                           style={plotStyle} />
+                     ))}
+                  </div> : null}
+                  {showHeatmap ? <div style={{ margin: '20px 0px 20px 0px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                     {data.map((attr) => (
+                        <Plot
+                           attr={attr}
+                           key={'demo_' + attr.name + '_heatmap'}
+                           modes={['Heatmap']}
+                           settings={settings}
+                           pixelScale={roundedPixelScale}
+                           watchedVal={watchedVal}
+                           style={plotStyle} />
+                     ))}
+                  </div> : null}
+                  {showFlame ? <div style={{ margin: '20px 0px 20px 0px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                     {data.map((attr) => (
+                        <Plot
+                           attr={attr}
+                           key={'demo_' + attr.name + '_flame'}
+                           modes={['Flame']}
+                           settings={settings}
+                           pixelScale={roundedPixelScale}
+                           watchedVal={watchedVal}
+                           style={plotStyle} />
+                     ))}
+                  </div> : null}
+               </div>
+            );
+
+
+      }
+
       return (
-         <div>
-            {this.makeControls()}
-            {plots}
-         </div>
+         <RemountOnResize>
+            <div ref={this.mountedView}>
+               {this.makeControls()}
+               {plots}
+            </div>
+         </RemountOnResize>
       )
    }
 }

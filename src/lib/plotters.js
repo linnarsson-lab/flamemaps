@@ -427,7 +427,7 @@ function flamemapPainter(context, range, dataToColor, settings) {
 
 	if (data.length < width) {
 		// more pixels than data
-		const barWidth = width * range.scale / data.length;
+		const barWidth = width * ratio / data.length;
 		const barHeight = context.height;
 
 		let i = 0, x = xOffset;
