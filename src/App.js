@@ -78,7 +78,7 @@ class App extends PureComponent {
           Three interactive plots should be displayed below, one bar graph, one heatmap, and one flame map. The plots show levels of gene expression in a selection of mouse cells for a given gene.
         </p>
         <p>
-          The plots should be 800 pixels wide, and for demonstration purposes the width of the columns is at least four pixels. <i>(we are assuming this is viewed on a screen enough resolution. We try to compensate for smaller screens, as well as browser-zoom and high density displays, but it might not be completely right. Our apologies, it is very hard to make dynamic plots behave the same across different media)</i></p>
+          The plots should be 800 pixels wide, and for demonstration purposes the width of the columns is at least four pixels. <i>(we are assuming this is viewed on a display with screen enough resolution. We try to compensate for smaller screens, as well as browser-zoom and high density displays, but it might not be completely right. Our apologies, it is very hard to make dynamic plots behave the same across different media)</i></p>
         <p>Try changing the number of plotted cells, while predicting how different amounts of data affect the shape plot itself:</p>
         <IntroDemo amount={introDemoAmount} />
         <p>
