@@ -8,7 +8,7 @@ import { SplashImage, SplashFlame } from './components/splash-image';
 import { IntroDemo } from './components/intro-demo';
 
 import { SortedPlots } from './components/sorted-plots';
-import { UnsortedSortedPlots } from './components/unsorted-plots';
+import { UnsortedPlots } from './components/unsorted-plots';
 import { AlternatingPlots } from './components/alternating-plots';
 import { Demos } from './components/demos';
 
@@ -144,7 +144,7 @@ class App extends PureComponent {
         <p>
           However, when the order of data matters this is not an option. For example, if we want to compare which cluster of cells has high or low values across various genes, we need to keep a fixed order.
         </p>
-        <UnsortedSortedPlots />
+        <UnsortedPlots />
         <h3>Aliasing issues</h3>
         <p>
           An underlying assumption for flame maps is that slightly displacing cells locally is not a problem, letting us get away with sorting the data by value in each column. This might not alwys be the case.

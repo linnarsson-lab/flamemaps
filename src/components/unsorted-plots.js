@@ -5,7 +5,7 @@ import { RemountOnResize } from './remount';
 
 import { data } from '../lib/data';
 
-export class UnsortedSortedPlots extends PureComponent {
+export class UnsortedPlots extends PureComponent {
    constructor(props) {
       super(props);
       this.mountedView = this.mountedView.bind(this);

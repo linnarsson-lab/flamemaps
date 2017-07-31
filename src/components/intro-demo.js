@@ -25,12 +25,17 @@ export class IntroDemo extends Component {
     let datamap = {};
     const dataselect = (
       <label>
-        Select gene data: <select onChange={this.handleSelect}>
+        Select gene data: <select onChange={this.handleSelect} defaultValue='Hexb'>
           {
             data.map((attr) => {
-              console.log(attr)
               datamap[attr.name] = attr;
-              return <option value={attr.name} selected={attr.name === 'Hexb'}>{attr.name}</option>;
+              return (
+                <option
+                  key={attr.name}
+                  value={attr.name}>
+                  {attr.name}
+                </option>
+              );
             })
           }
         </select>
@@ -123,7 +128,7 @@ export class IntroDemo extends Component {
       pixelScale,
     } = this.state;
 
-    const settings = {logScale, emphasizeNonZero};
+    const settings = { logScale, emphasizeNonZero };
     const plotStyle = { height: '100px', margin: '5px 0px 5px 0px' };
     return (
       <RemountOnResize>
