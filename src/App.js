@@ -187,7 +187,15 @@ class App extends PureComponent {
           They are, in our opinion, very simple to construct, to the point where we are still not sure if they are really novel or if we simply have not looked hard enough. If they do already exist under another name, and with implementations in major plotting packages, please let us know. It would make the people in our group very happy (see below).
         </p>
         <h2>Implementations</h2>
-        <p><i>For now, you're looking at it. Sorry. Flame maps were created for an as-of-now in-house web app. For performance reasons they were implemented in raw javascript and html5 canvas (not even a framework like d3.js was used). This demo page is based on repurposed plotting code from thos web app. I do not know PyPlot, R or any other plotting library really, and currently don't have the time it would take to learn them well enough to implement these plots efficiently. So I figured it made more sense to write a convincing demonstration page and hope that  others will agree these plots are useful, in the hope that the various plotting library wizards out there take over from there. And then Gioele can stop wishing I'll learn how to use PyPlot to implement this for him - Job</i></p>
+        <p><i>
+          For now, you're looking at it. Sorry. The source code for this website be found at:
+          </i></p>
+        <p><a href='https://github.com/linnarsson-lab/flamemaps'>
+          https://github.com/linnarsson-lab/flamemaps
+        </a></p>
+        <p><i>
+          Flame maps were created for an as-of-now in-house web app. For performance reasons they were implemented in raw javascript and html5 canvas (not even a framework like d3.js was used). This demo page is based on repurposed plotting code from thos web app. I do not know PyPlot, R or any other plotting library really, and currently don't have the time it would take to learn them well enough to implement these plots efficiently. So I figured it made more sense to write a convincing demonstration page and hope that  others will agree these plots are useful, in the hope that the various plotting library wizards out there take over from there. And then Gioele can stop wishing I'll learn how to use PyPlot to implement this for him - Job
+          </i></p>
         <h2>Interactive Demos</h2>
         <Demos />
       </article>
