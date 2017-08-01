@@ -4,11 +4,11 @@ import React, { PureComponent } from 'react';
 
 import Checkbox from 'rc-checkbox';
 
-import { SplashImage, SplashFlame } from './components/splash-image';
+import { SplashImage, SplashFlame, SplashIcicle } from './components/splash-image';
 import { IntroDemo } from './components/intro-demo';
 
 import { SortedPlots } from './components/sorted-plots';
-import { UnsortedPlots } from './components/unsorted-plots';
+//import { UnsortedPlots } from './components/unsorted-plots';
 import { AlternatingPlots } from './components/alternating-plots';
 import { Demos } from './components/demos';
 
@@ -18,12 +18,14 @@ class App extends PureComponent {
 
     this.handleIntroDemoAmount = this.handleIntroDemoAmount.bind(this);
     this.handleEmphNZ = this.handleEmphNZ.bind(this);
+    this.handleIcicle = this.handleIcicle.bind(this);
 
     this.state = {
       splashEmphNZ: true,
       showBar: true,
       showHeatmap: true,
       showFlame: true,
+      showIcicle: false,
     };
   }
 
@@ -35,10 +37,17 @@ class App extends PureComponent {
     this.setState({ splashEmphNZ: e.target.checked ? true : false })
   }
 
+  handleIcicle(e) {
+    e.preventDefault();
+    const showIcicle = !this.state.showIcicle;
+    this.setState({ showIcicle })
+  }
+
   render() {
     const {
       introDemoAmount,
       splashEmphNZ,
+      showIcicle,
     } = this.state;
 
     const introSetLink = (val) => {
@@ -55,30 +64,55 @@ class App extends PureComponent {
 
     return (
       <article>
-        <h1>Flame maps</h1>
+        <h1>Icicle and Flame Maps</h1>
         <p><i>Job van der Zwan</i></p>
         <h2>Introduction</h2>
         <p>
-          Flame maps (not to be confused with <a href='http://www.brendangregg.com/flamegraphs.html'>flame graphs</a>) are a novel type of plot (as far as we can tell), originally designed at <a href='http://linnarssonlab.org/'>Linnarsson Lab</a> to cope with issues that arose due to having far more raw data to show than available screen resolution. Below you can compare a few examples of the same data displayed as bar graphs, heat maps, and flame maps.
+          Icicle and flame maps (not to be confused with <a href='http://www.cs.middlebury.edu/~candrews/showcase/infovis_techniques_s16/icicle_plots/icicleplots.html'>icicle plots</a> or <a href='http://www.brendangregg.com/flamegraphs.html'>flame graphs</a>) are a novel type of plot (as far as we can tell), originally designed at <a href='http://linnarssonlab.org/'>Linnarsson Lab</a> to cope with issues that arose due to having far more raw data to show than available screen resolution. Specifically, they avoid issues of smoothing out information through averaging. In a flame map, the "height" of a bar shows the ratio of zero to non-zero values in that bin. The heat map gradient of the bar shows the actual values. Below you can compare a few <a href='https://en.wikipedia.org/wiki/Small_multiple'>small multiples</a> of the same data displayed as bar graphs, heat maps, and flame/icicle maps.
         </p>
         <SplashImage
           width={70}
           pixelScale={1}
           settings={{ logScale: true, emphasizeNonZero: true }} />
-        <p><i>
-          (The data is taken from <a href='http://science.sciencemag.org/content/347/6226/1138'>"Cell types in the mouse cortex and hippocampus revealed by single-cell RNA-seq", A Zeisel, AB Muñoz-Manchado, et al. 2015</a>. However, the data itself does not really matter for what we are trying to demonstrate)
-        </i></p>
         <p>
-          Similar to bar graphs and heat maps, flame maps are constructed by grouping the input values across the available columns, evenly and in order. However, instead of averaging these values, they are then sorted and plotted as a vertical heat map (if we have only one data point per column, the result is effectively a regular heatmap). The typical look of the plotted gradients gives the flame map its name.
+          <i>(The data is taken from <a href='http://science.sciencemag.org/content/347/6226/1138'>"Cell types in the mouse cortex and hippocampus revealed by single-cell RNA-seq", A Zeisel, AB Muñoz-Manchado, et al. 2015</a>. However, the data itself does not really matter for what we are trying to demonstrate)</i>
+        </p>
+        <p>As you probably guessed, icicle maps are just upside-down flame maps with a different color scale. Since they are identical otherwise, I will use flame maps as the standard example from now on.</p>
+        <h2>Original Scientific Context</h2>
+        <p>
+          Flame maps were designed to solve a specific problem, and knowing the problem they originally tried to solve may make it easier to understand them.
+          </p>
+        <p>
+          Linnarsson Lab is does research in the field of molecular neurobiology, using <a href='https://en.wikipedia.org/wiki/Single_cell_sequencing#Single-cell_RNA_sequencing_.28scRNA-seq.29'>Single cell RNA sequencing</a> (scRNAseq). The <a href='https://en.wikipedia.org/wiki/Lie-to-children'>lies-to-children</a> explanation of what we do is as follows:
+        </p>
+        <ul>
+          <li>Take a sample of cells (the biological kind)</li>
+          <li>Measure gene expressions for each cell: <i>"is gene Mog active, is gene Plp1 active, etc."</i>. This is measured by counting RNA levels for that gene.</li>
+          <li>Try to identify which genes are associated with which cell type</li>
+          <li>Combine this with sampling from different developmental stages to untangle the genetic side of cell development</li>
+        </ul>
+        <p>
+          The idea is identifying cell types by genes (for example, <a href='http://ki.se/en/news/special-nerve-cells-cause-goose-bumps-and-nipple-erection'>new types of neurons</a>) Since we don't know <i>a priori</i> what the relevant genes will be, the number of genes measured is essentially "as much as you can get away with" (typically tens of thousands). Similarly, for purposes of statistical strength, the cell sample size is "as big as you can get away with", which is rapidly increasing in this field: data sets of tens of thousands of cells are common now, hundreds of thousands are starting to pop up and surely a million is not far off.
         </p>
         <p>
-          This has the effect of plotting the number of non-zero values, and how those values are distributed as two separate things; using an average would reduce these separate measurements to one number. They may be of use in situations where this distinction is important.</p>
+          The end result is a data set that is basically a giant table, with columns representing individual cells, rows representing genes, and cells in the table representing how much RNA was measured of that gene in that particular cell. Most of these cells will be zero because the gene is not active - we have a sparse data set.
+        </p>
+        <p>
+          To make sense of the data, clustering algorithms are used to sort the rows and columns of this table, so that similar cells and genes end up close together. The next step is to inspect individual rows of this table for "marker genes" - genes whose activation (or lack thereof) can be used to categorise cell types. That is where these plots come in.
+        </p>
+        <p>
+          <b>A crucial point to note here is that unlike most charts, the x-axes of the plots used in this article do not represent a value like time, or clear-cut categories. It's just cells, ordered by "heuristic likeness" (to the best of our cluster algorithm's ability), grouped evenly across available bars.</b>
+        </p>
+        <p>
+          So say we use a bar chart to plot a gene row. Each bar is simply a bin taking its portion of our original row. Say we have 100.000 cells, but only 1000 pixels to display them. Even if we make our bars as narrow as a single pixel, they still represent 100 cells, typically by averaging their values.
+        </p>
         <h2>Issues introduced by binning and averaging</h2>
         <p>
-          Three interactive plots should be displayed below, one bar graph, one heatmap, and one flame map. The plots show levels of gene expression in a selection of mouse cells for a given gene.
+          Three interactive plots should be displayed below, one bar graph, one heatmap, and one flame map. The plots show levels of gene expression in a selection of mouse cells for a given gene. For heat maps and flame maps, zero values are displayed as white, and non-zero values scale from yellow for low values, to red for high values.
         </p>
         <p>
-          The plots should be 800 pixels wide, and for demonstration purposes the width of the columns is at least four pixels. <i>(we are assuming this is viewed on a display with a high enough resolution. We try to compensate for smaller screens, as well as browser-zoom and high density displays, but it might not be completely right. Our apologies, it is very hard to make dynamic plots behave the same across different media)</i></p>
+          The plots should be 800 pixels wide, and for demonstration purposes the width of the bars is at least four pixels. That means they can display at most 200 bars (assuming this is viewed on a display with a high enough resolution. We try to compensate for smaller screens, zoom settings, and high density displays, but it might not be completely right. Apologies, it is very hard to make dynamic plots behave the same across different media).
+        </p>
         <p>Try changing the number of plotted cells, while predicting how different amounts of data affect the shape plot itself:</p>
         <IntroDemo amount={introDemoAmount} />
         <p>
@@ -86,51 +120,80 @@ class App extends PureComponent {
         </p>
         <h3>Large relative differences when averaging small bin sizes</h3>
         <p>
-          Recall that we have 800 pixels available, and a minimum of four pixels per column. Therefore we can display at most 200 data points individually. Bigger data sets inevitably involve grouping the data. For the bar graph and heatmap we typically bin the data per column, then plot the average value of the bin.
+          Because our maximum of 200 bars, larger data sets require grouping the data. For the bar graph and heatmap we typically bin the data as evenly as possible, then plot the average value per bin.
         </p>
         <p>
-          Compare plotting {introSetLink(298)}, {introSetLink(299)}, and {introSetLink(300)} cells. In this range the bins alternate between one and two data points. Because it is one and a half times the amount of columns, a tiny bit of wiggling has a big effect on how the data is distributed. To make matters worse, for bar graphs and heat maps there is no direct visual way of telling how this is done, hiding it from the reader. Admittedly, the examples are specifically chosen to maximise that effect, but it illustrates the point.
+          Compare plotting {introSetLink(298)}, {introSetLink(299)}, and {introSetLink(300)} cells. In this range the bar alternate between binning one and two data points. As you can see, a tiny bit of wiggling has a big effect on how the data is distributed. To make matters worse, for bar graphs and heat maps there is no direct visual way of telling how this is done, hiding it from the reader. Admittedly, the data-to-bins ratio here is specifically chosen to maximise that effect, but it illustrates the point.
         </p>
-        <h3>Averaging over sparse data</h3>
+        <h3>Averaging away information</h3>
         <p>
-          You may have noticed that the bar graphs tends to decrease in height with increased bin-size. Because our data is sparse, averaging tends to skew values towards zero. When we have very large data sets, this can even mask non-zero values, although log-scaling the vertical axis helps a bit here.
+          Often, averaging is a good thing, smoothing away noise and outliers. In our case it can hide useful information. Often it is important to know in <i>how many</i> cells a gene is expressed. In other words: the sparsity of the data. This is a separate thing from the actual value of expression. Averaging reduces these two types of information to one number.
+        </p>
+        <p>
+          You may also have noticed that the bar graphs tends to decrease in height with increased bin-size (try Hexb and watch the left values). Because our data is sparse, averaging tends to skew values towards zero. When we have very large data sets, this can even mask non-zero values, although log-scaling the vertical axis helps a bit here.
           </p>
         <p>
           <i>(Aside from using a log-scale, there are more sophisticated alternatives to averaging that can help as well, like <a href='https://skemman.is/handle/1946/15343'>Steinarsson's Largest Triangle Three Buckets algorithm</a>, but they have their own trade-offs)</i>
         </p>
         <h2>How flame maps attempt to address these issues</h2>
-        <p>The problems in the previous paragraph could be seen as simplified versions of the problems highlighted by <a href='https://en.wikipedia.org/wiki/Anscombe%27s_quartet'>Anscombe's Quartet</a>, or the more recent <a href='https://www.autodeskresearch.com/publications/samestats'>'Datasaurus Dozen'</a> by Matejka and Fitzmaurice. Like the graphs in these papers, the most straight-forward solution would be showing the raw data being binned.
+        <p>The aforementiond problems are simplified examples of the problems highlighted by <a href='https://en.wikipedia.org/wiki/Anscombe%27s_quartet'>Anscombe's Quartet</a>, or the more recent <a href='https://www.autodeskresearch.com/publications/samestats'>'Datasaurus Dozen'</a> by Matejka and Fitzmaurice. Like the graphs in these papers, the most straight-forward solution would be representing the raw data being binned.
         </p>
         <h3>Using more space and colour dimensions</h3>
         <p>
-          Heat maps only use horizontal position and colour, and bar graphs use horizontal position and height (colours usually being limited to grouping data by category). Flame maps use width, height and colour to indicate different things, effectively having one extra "dimension" at their disposal to communicate information.
-          </p>
-        <p>
-          The height gives an indication of how many non-zero values a bin contains (it is fixed at the biggest bin size, and for bins with less data a grey block signals the missing element). The colour indicates what the actual cell values are. When plotting between {introSetLink(201)} and {introSetLink(400)} cells in the example above, we can immediately see when we are binning two values or one, and what their separate values are.
+          Heat maps (as used here) only use horizontal position and colour, and bar graphs use horizontal position and height (colours usually being limited to grouping data by category). Flame maps use width, height and colour to indicate different things, effectively having one extra "dimension" at their disposal to communicate information.
         </p>
         <p>
-          Even when we have more data per column than vertical pixels, and are therefore forced to average data per pixel, this does not pose as much of a problem as before. Because the data is sorted, the values being averaged are likely to be (nearly) the same value.
+          Similar to how we use bar graphs and heat maps, flame maps group the input data in order, and as evenly as possible across the available bars. However, instead of averaging these values, each bin sorts their values, and plots them a vertical heat map (if we have only one data point per bin, the result is effectively a regular heatmap). The typical look of the plotted gradients gives the flame map its name.
+        </p>
+        <p>
+          <b>In a flame map, the "height" of a bar shows the count of non-zero values in that bin. The gradient of the bar gives an impression of the actual values</b> (height is fixed at the biggest bin size, and for bins with less data a grey block signals the missing element).
+        </p>
+        <p>
+          For example, when plotting between {introSetLink(201)} and {introSetLink(400)} cells in the example above, we can immediately see when we are binning two values or one, and what their separate values are. Meg3 is another good example of where this adds information: there is a chunk where nearly all cells are non-zero, but expression level varies. This could not be discerned on the heat map or bar graph.
+        </p>
+        <p>
+          Even when we have more data per column than vertical pixels, and are therefore forced to average data per pixel, this is less of a problem than before: because the data is sorted, the values being averaged are likely to be (nearly) the same value.
         </p>
         <h3>Dealing with very sparse data</h3>
         <p>
-          Sometimes the data is so sparse that only the bottom bin of a column contains non-zero values. If our columns are only two to four data points high ({introSetLink(400)}, {introSetLink(600)} and {introSetLink(800)} cells in the above demo), these are still readable, but when the data-to-pixel ratio is bigger, we end up with our sparse-data averaging problem again. For example, in the postage-stamp sized plots that opened the article, each cell has only one or two pixels. With sparse data, this makes non-zero values hard to spot.
+          Sometimes the data is so sparse that only the bottom bin of a column contains non-zero values. If our bins are only two to four data points high ({introSetLink(400)}, {introSetLink(600)} and {introSetLink(800)} cells in the above demo), these are still readable, but when the data-to-pixel ratio is bigger, we end up with our sparse-data averaging problem again.
+        </p>
+        <p>For example, in the small multiple that opened the article, each cell has only one or two pixels. With sparse data, this makes non-zero values hard to spot.
         </p>
         <p>
-          To compensate for this, flame maps default to adding a thin strip below the main plot, that shows the maximum value of the column above it. These are separated by a grey line, to avoid confusing this with a higher number of expressed cells:
+          To compensate for this, flame maps default to adding a thin strip below the main plot, that shows the maximum value of the bin above it. These are separated by a grey line, to avoid confusing this with a higher number of expressed cells:
         </p>
-        <SplashFlame
-          width={70}
-          pixelScale={1}
-          settings={{ logScale: true, emphasizeNonZero: splashEmphNZ }} />
-        <label style={{ margin: '10px 25px 10px 25px' }}>
-          <Checkbox
-            defaultChecked={1}
-            checked={splashEmphNZ ? 1 : 0}
-            onChange={this.handleEmphNZ} />
-          <span>&nbsp;emphasize non-zero</span>
-        </label>
+        {
+          showIcicle ? (
+            <SplashIcicle
+              key='emphNZ_icicle'
+              width={70}
+              pixelScale={1}
+              settings={{ logScale: true, emphasizeNonZero: splashEmphNZ }} />
+          ) : (
+              <SplashFlame
+                key='emphNZ_flame'
+                width={70}
+                pixelScale={1}
+                settings={{ logScale: true, emphasizeNonZero: splashEmphNZ }} />
+            )
+        }
+        <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+          <label style={{ flex: 150, margin: '10px 25px 10px 25px' }}>
+            <Checkbox
+              defaultChecked={1}
+              checked={splashEmphNZ ? 1 : 0}
+              onChange={this.handleEmphNZ} />
+            <span>&nbsp;emphasize non-zero</span>
+          </label>
+          <button
+            style={{ flex: 150, margin: '10px 25px 10px 25px' }}
+            onClick={this.handleIcicle}>
+            {showIcicle ? <span>Heatmap/<b>Icicle</b></span> : <span><b>Heatmap</b>/Icicle</span>}
+          </button>
+        </div>
         <p>
-          For very sparse data, the extra strip makes the of presence non-zero values stand out.
+          For very sparse data, the extra strip makes the presence of non-zero values stand out.
         </p>
         <h2>Caveats of using flame maps</h2>
         <p>
@@ -142,9 +205,8 @@ class App extends PureComponent {
         </p>
         <SortedPlots />
         <p>
-          However, when the order of data matters this is not an option. For example, if we want to compare which cluster of cells has high or low values across various genes, we need to keep a fixed order.
+          However, when the order of data matters this is not an option. In our case, we want to compare clusters of cells, so regardless of which order we choose, it has to stay constant across plots.
         </p>
-        <UnsortedPlots />
         <h3>Aliasing issues</h3>
         <p>
           An underlying assumption for flame maps is that slightly displacing cells locally is not a problem, letting us get away with sorting the data by value in each column. This might not alwys be the case.
@@ -178,8 +240,8 @@ class App extends PureComponent {
         <h2>Summary</h2>
         <p>When compared to traditional bar graphs and heat maps, due to not averaging grouped data, flame maps let us:</p>
         <ul>
-          <li>discern the relative amount of zero values</li>
           <li>discern whether grouped data contain many low values, or a few high values</li>
+          <li>discern the ratio zero to non-zero values</li>
           <li>spot the presence of non-zero values when data is extremely sparse</li>
         </ul>
         <p>In situations where these are desired properties, and a very precise distinction between high and low values is not required, we think they will provide advantages.</p>
@@ -198,7 +260,7 @@ class App extends PureComponent {
           </i></p>
         <h2>Interactive Demos</h2>
         <Demos />
-      </article>
+      </article >
     );
   }
 }

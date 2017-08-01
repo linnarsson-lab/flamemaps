@@ -20,6 +20,8 @@ function selectPlotter(mode) {
 			return heatmapPainter;
 		case 'Flame':
 			return flamemapPainter;
+		case 'Icicle':
+			return iciclemapPainter;
 		case 'Bars':
 		default:
 			return barPaint;
@@ -56,7 +58,7 @@ export function sparkline(attr, mode, settings) {
 	return (context) => {
 		// draw sparkline + label
 		sparklinePainter(context, paint, dataToColor, range, settings);
-		labelPainter(context, attr.name);
+		labelPainter(context, attr.name, mode);
 	};
 }
 
@@ -463,9 +465,9 @@ function flamemapPainter(context, range, dataToColor, settings) {
 
 		let flameHeight = context.height, heatmapHeight = context.height;
 		if (emphasizeNonZero) {
-			flameHeight *= 0.9375;
+			flameHeight = (flameHeight * 0.9375 | 0);
 			// subtract ratio for the thin heatmap strip
-			heatmapHeight = context.height - (flameHeight | 0) - range.ratio;
+			heatmapHeight = context.height - flameHeight;
 		}
 
 		context.fillStyle = '#e8e8e8';
@@ -536,17 +538,145 @@ function flamemapPainter(context, range, dataToColor, settings) {
 		if (emphasizeNonZero) {
 			// slightly separate the heatmap from the flame-map with a faded strip
 			context.fillStyle = 'darkgray';
-			context.globalAlpha = 1;
-			context.fillRect(0, flameHeight, context.width, range.ratio | 0);
-			context.globalAlpha = 1.0;
+			context.fillRect(0, flameHeight, context.width, Math.ceil(range.ratio));
 		}
 	}
 }
 
-function labelPainter(context, label) {
+function iciclemapPainter(context, range, dataToColor, settings) {
+	const { data, xOffset } = range;
+	const { emphasizeNonZero } = settings;
+	// Support high-density displays. However, we cut it by half
+	// to increase details a little bit.
+	// Downside: using browser-zoom scales up plots as well
+	let ratio = range.ratio * range.scale;
+	ratio = ratio > 1 ? ratio : 1;
+	// Important: we MUST round this number, or the plotter
+	// crashes the browser for results that are not
+	// powers of two.
+	const width = (range.width / ratio) | 0;
+
+	if (data.length < width) {
+		// more pixels than data
+		const barWidth = width * ratio / data.length;
+		const barHeight = context.height;
+
+		let i = 0, x = xOffset;
+		while (i < data.length) {
+			// Even if outliers[i] is not a number, OR-masking forces it to 0
+			let color = dataToColor(data[i] || 0);
+			context.fillStyle = color;
+			let j = i, nextColor;
+			// advance while colour value doesn't change
+			do {
+				j++;
+				nextColor = dataToColor(data[j] || 0);
+			} while (color === nextColor && i + j < data.length);
+			// force to pixel grid
+			const w = (j - i) * barWidth;
+			const roundedWidth = ((x + w) | 0) - (x | 0);
+			context.fillRect(x | 0, 0, roundedWidth, barHeight);
+			i = j; x += w;
+		}
+	}
+	else {
+		// more data than pixels
+
+		const barWidth = ratio;
+
+		// Because of rounding, our bins can come in two sizes.
+		// For small datasets this is a problem: plotting a gradient
+		// for two or three cells gives a very different result.
+		// To fix this, we always make the gradient as large as the
+		// largest bin size.
+		// If necessary, we'll pad it with a zero value.
+		const binSize = Math.ceil(data.length / width) | 0;
+
+		let icicleHeight = context.height, heatmapHeight = 0;
+		if (emphasizeNonZero) {
+			icicleHeight = (icicleHeight * 0.9375) | 0;
+			// subtract ratio for the thin heatmap strip
+			heatmapHeight = context.height - icicleHeight;
+		}
+
+		context.fillStyle = '#e8e8e8';
+		context.fillRect(0, 0, context.width, context.height);
+
+		let icicleSlices = {}, i = width;
+		while (i--) {
+			const x = (xOffset + i * barWidth) | 0;
+			const x1 = (xOffset + (i + 1) * barWidth) | 0;
+			const roundedWidth = x1 - x;
+
+			let i0 = (i * data.length / width) | 0;
+			let i1 = ((i + 1) * data.length / width) | 0;
+			const l = i1 - i0;
+			let icicleSlice = icicleSlices[l];
+			if (icicleSlice) {
+				while (i1 - 16 > i0) {
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+					icicleSlice[--i1 - i0] = data[i1];
+				}
+				while (i1-- > i0) {
+					icicleSlice[i1 - i0] = data[i1];
+				}
+			}
+			else {
+				// Cach the icicleSlice to avoid allocating thousands of
+				// tiny typed arrays and immediately throwing them away.
+				// Realistically we only have to cache a few options
+				// due to possible rounding error.
+				icicleSlice = data.slice(i0, i1);
+				icicleSlices[l] = icicleSlice;
+			}
+			icicleSlice.sort((a, b) => (a < b ? 1 : a > b ? -1 : 0));
+			if (emphasizeNonZero) {
+				// draw strip to highlight max value, so dataset with
+				// sparse gene expression are more visible
+				context.fillStyle = dataToColor(icicleSlice[0]|0);
+				context.fillRect(x, 0, roundedWidth, heatmapHeight);
+			}
+			let j = 0, k = 0;
+			while (j < l) {
+				const val = icicleSlice[j];
+				do {
+					k++;
+				} while (k < l && val === icicleSlice[k]);
+				const y = (icicleHeight * j / binSize) | 0;
+				const y1 = (icicleHeight * k / binSize) | 0;
+				const roundedHeight = y1 - y;
+				context.fillStyle = dataToColor(val || 0);
+				context.fillRect(x, heatmapHeight + y, roundedWidth, roundedHeight);
+				j = k;
+			}
+		}
+		if (emphasizeNonZero) {
+			// slightly separate the heatmap from the icicle-map with a faded strip
+			context.fillStyle = 'darkgray';
+			context.fillRect(0, heatmapHeight - Math.ceil(range.ratio), context.width, Math.ceil(range.ratio));
+		}
+	}
+}
+
+function labelPainter(context, label, mode) {
 	const ratio = (context.pixelRatio || 1);
 	const labelSize = 12 * ratio;
 	textStyle(context);
 	textSize(context, labelSize);
-	drawText(context, label, 32 * ratio, labelSize * 1.2);
+	const y = mode !== 'Icicle' ? labelSize * 1.2 : context.height - labelSize * 0.2;
+	drawText(context, label, 32 * ratio, y);
 }

@@ -33,6 +33,12 @@ export class SplashImage extends PureComponent {
           pixelScale={pixelScale}
           settings={settings}
         />
+        <p><i>Icicle Maps</i></p>
+        <SplashIcicle
+          width={width}
+          pixelScale={pixelScale}
+          settings={settings}
+        />
       </div>
     )
   }
@@ -111,6 +117,34 @@ export class SplashFlame extends PureComponent {
               attr={attr}
               key={'demo_' + attr.name + '_flame'}
               modes={['Flame']}
+              settings={settings}
+              pixelScale={pixelScale}
+              watchedVal={watchedVal}
+              style={{ margin: 5, width: width, height: 70, flex: 1 }} />
+          ))
+        }
+      </div>
+    );
+  }
+}
+
+export class SplashIcicle extends PureComponent {
+  render() {
+    const {
+      width,
+      pixelScale,
+      settings,
+    } = this.props;
+    const watchedVal = `${width}${pixelScale}${settings}`;
+
+    return (
+      <div style={{ margin: '20px 0px 20px 0px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+        {
+          data.map((attr) => (
+            <Plot
+              attr={attr}
+              key={'demo_' + attr.name + '_flame'}
+              modes={['Icicle']}
               settings={settings}
               pixelScale={pixelScale}
               watchedVal={watchedVal}

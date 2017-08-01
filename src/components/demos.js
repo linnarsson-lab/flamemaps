@@ -24,10 +24,17 @@ export class Demos extends Component {
       this.handleHeatmapToggle = this.handleHeatmapToggle.bind(this);
       this.handleFlameToggle = this.handleFlameToggle.bind(this);
       this.handleEmphNZToggle = this.handleEmphNZToggle.bind(this);
+      this.handleIcicle = this.handleIcicle.bind(this);
       this.mountedView = this.mountedView.bind(this);
 
       this.makeControls = this.makeControls.bind(this);
       const ratio = window.devicePixelRatio || 1;
+      let { logScale, emphasizeNonZero, showIcicle } = props;
+      logScale = logScale === undefined || logScale;
+      emphasizeNonZero = emphasizeNonZero === undefined || emphasizeNonZero;
+
+      showIcicle = showIcicle === undefined ? false : showIcicle;
+
 
       this.state = {
          containerWidth: 0,
@@ -36,8 +43,9 @@ export class Demos extends Component {
          scaledWidth: 200,
          pixelScale: 1,
          roundedPixelScale: 1,
-         logScale: true,
-         emphasizeNonZero: true,
+         logScale,
+         emphasizeNonZero,
+         showIcicle,
          arrangeByGene: false,
          showBar: true,
          showHeatmap: true,
@@ -48,7 +56,7 @@ export class Demos extends Component {
    handlewidth(value) {
       const { pixelScale, containerWidth, ratio } = this.state;
       const width = Math.max(70, Math.min(800, value));
-      const scaledWidth = (width * containerWidth / (800*ratio)) | 0;
+      const scaledWidth = (width * containerWidth / (800 * ratio)) | 0;
       const roundedPixelScale = scaledWidth / Math.ceil(scaledWidth / pixelScale);
 
       this.setState({
@@ -91,21 +99,28 @@ export class Demos extends Component {
       this.setState({ emphasizeNonZero: e.target.checked ? true : false });
    }
 
+   handleIcicle(e) {
+      e.preventDefault();
+      const showIcicle = !this.state.showIcicle;
+      this.setState({ showIcicle })
+   }
+
    makeControls() {
       const {
-         width,
+width,
          pixelScale,
          showBar,
          showHeatmap,
          showFlame,
          logScale,
          emphasizeNonZero,
+         showIcicle,
          arrangeByGene,
-      } = this.state;
+} = this.state;
 
       return (
          <div>
-            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
                <SliderWithTooltip
                   onChange={this.handlewidth}
                   style={{ flex: 600, margin: '10px 25px 10px 25px' }}
@@ -129,7 +144,7 @@ export class Demos extends Component {
                </label>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
                <SliderWithTooltip
                   onChange={this.handleDemoPixels}
                   style={{ flex: 600, margin: '10px 25px 10px 25px' }}
@@ -174,8 +189,6 @@ export class Demos extends Component {
                      onChange={this.handleFlameToggle} />
                   <span>show flame maps</span>
                </label>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                <label style={{ flex: 100, margin: '5px 25px 5px 25px' }}>
                   <Checkbox
                      defaultChecked={logScale}
@@ -197,6 +210,11 @@ export class Demos extends Component {
                      onChange={this.handleByGene} />
                   <span>arrange per gene</span>
                </label>
+               <button
+                  style={{ flex: 100, margin: '10px 25px 10px 25px' }}
+                  onClick={this.handleIcicle}>
+                  {showIcicle ? <span>Heatmap/<b>Icicle</b></span> : <span><b>Heatmap</b>/Icicle</span>}
+               </button>
             </div>
          </div>
       );
@@ -207,7 +225,7 @@ export class Demos extends Component {
       // this lets us scale below 800 pixels and still mainting
       // _some_ form of consistency.
       if (view) {
-         const ratio  =  window.devicePixelRatio || 1;
+         const ratio = window.devicePixelRatio || 1;
          const containerWidth = (view.clientWidth * ratio) | 0;
          this.setState({ view, ratio, containerWidth });
       }
@@ -222,11 +240,12 @@ export class Demos extends Component {
          roundedPixelScale,
          logScale,
          emphasizeNonZero,
+         showIcicle,
          arrangeByGene,
          showBar,
          showHeatmap,
          showFlame,
-      } = this.state
+} = this.state
       const settings = { logScale, emphasizeNonZero };
       const watchedVal = `${scaledWidth}${pixelScale}${logScale}${arrangeByGene}`;
 
@@ -254,14 +273,28 @@ export class Demos extends Component {
                            pixelScale={roundedPixelScale}
                            watchedVal={watchedVal}
                            style={plotStyle} /> : null}
-                        {showFlame ? <Plot
-                           attr={attr}
-                           key={'demo_' + attr.name + '_flame'}
-                           modes={['Flame']}
-                           settings={settings}
-                           pixelScale={roundedPixelScale}
-                           watchedVal={watchedVal}
-                           style={plotStyle} /> : null}
+                        {showFlame ? (
+                           showIcicle ? (
+                              <Plot
+                                 attr={attr}
+                                 key={'demo_' + attr.name + '_icicle'}
+                                 modes={['Icicle']}
+                                 settings={settings}
+                                 pixelScale={roundedPixelScale}
+                                 watchedVal={watchedVal}
+                                 style={plotStyle} />
+
+                           ) : (
+                                 <Plot
+                                    attr={attr}
+                                    key={'demo_' + attr.name + '_flame'}
+                                    modes={['Flame']}
+                                    settings={settings}
+                                    pixelScale={roundedPixelScale}
+                                    watchedVal={watchedVal}
+                                    style={plotStyle} />
+                              )
+                        ) : null}
                      </div>
                   ))}
             </div>
@@ -292,16 +325,28 @@ export class Demos extends Component {
                      ))}
                   </div> : null}
                   {showFlame ? <div style={{ margin: '20px 0px 20px 0px', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                     {data.map((attr) => (
-                        <Plot
-                           attr={attr}
-                           key={'demo_' + attr.name + '_flame'}
-                           modes={['Flame']}
-                           settings={settings}
-                           pixelScale={roundedPixelScale}
-                           watchedVal={watchedVal}
-                           style={plotStyle} />
-                     ))}
+                     {showIcicle ? (
+                        data.map((attr) => (
+                           <Plot
+                              attr={attr}
+                              key={'demo_' + attr.name + '_icicle'}
+                              modes={['Icicle']}
+                              settings={settings}
+                              pixelScale={roundedPixelScale}
+                              watchedVal={watchedVal}
+                              style={plotStyle} />))
+                        ) : (
+                           data.map((attr) => (
+                              <Plot
+                                 attr={attr}
+                                 key={'demo_' + attr.name + '_flame'}
+                                 modes={['Flame']}
+                                 settings={settings}
+                                 pixelScale={roundedPixelScale}
+                                 watchedVal={watchedVal}
+                                 style={plotStyle} />))
+                        )
+                     }
                   </div> : null}
                </div>
             );

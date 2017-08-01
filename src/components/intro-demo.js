@@ -20,12 +20,13 @@ export class IntroDemo extends Component {
     this.handleAmount = this.handleAmount.bind(this);
     this.handleLog = this.handleLog.bind(this);
     this.handleEmphNZ = this.handleEmphNZ.bind(this);
+    this.handleIcicle = this.handleIcicle.bind(this);
     this.mountedView = this.mountedView.bind(this);
 
     let datamap = {};
     const dataselect = (
       <label>
-        Select gene data: <select onChange={this.handleSelect} defaultValue='Hexb'>
+        Select gene data: <select onChange={this.handleSelect} defaultValue='Meg3'>
           {
             data.map((attr) => {
               datamap[attr.name] = attr;
@@ -43,11 +44,12 @@ export class IntroDemo extends Component {
     );
 
     const amount = props.amount || 100;
-    let { logScale, emphasizeNonZero } = props.settings || {};
+    let { logScale, emphasizeNonZero, showIcicle } = props.settings || {};
     logScale = logScale === undefined || logScale;
     emphasizeNonZero = emphasizeNonZero === undefined || emphasizeNonZero;
 
-    const selected = data[12];
+    showIcicle = showIcicle === undefined ? false : showIcicle;
+    const selected = data[9];
     const attr = Object.assign({}, selected,
       {
         name: `${selected.name}, first ${amount} cells of 3005`,
@@ -64,12 +66,13 @@ export class IntroDemo extends Component {
       amount,
       logScale,
       emphasizeNonZero,
+      showIcicle,
     };
   }
 
   handleSelect(event) {
     const { amount, datamap } = this.state;
-    const selected = datamap[event.target.value || "Hexb"];
+    const selected = datamap[event.target.value || "Meg3"];
     const attr = Object.assign({}, selected,
       {
         name: `${selected.name}, first ${amount} cells of 3005`,
@@ -99,6 +102,12 @@ export class IntroDemo extends Component {
     this.setState({ emphasizeNonZero: e.target.checked ? true : false })
   }
 
+  handleIcicle(e) {
+    e.preventDefault();
+    const showIcicle = !this.state.showIcicle;
+    this.setState({ showIcicle })
+  }
+
   mountedView(view) {
     // Similar to the trick used in the Canvas component,
     // this lets us scale below 800 pixels and still mainting
@@ -125,6 +134,7 @@ export class IntroDemo extends Component {
       amount,
       logScale,
       emphasizeNonZero,
+      showIcicle,
       pixelScale,
     } = this.state;
 
@@ -148,13 +158,25 @@ export class IntroDemo extends Component {
             pixelScale={pixelScale}
             settings={settings}
             style={plotStyle} />
-          <Plot
-            attr={attr}
-            key={'intro_demo_flame'}
-            modes={['Flame']}
-            pixelScale={pixelScale}
-            settings={settings}
-            style={plotStyle} />
+          {showIcicle ? (
+            <Plot
+              attr={attr}
+              key={'intro_demo_icicle'}
+              modes={['Icicle']}
+              pixelScale={pixelScale}
+              settings={settings}
+              style={plotStyle} />
+          ) : (
+              <Plot
+                attr={attr}
+                key={'intro_demo_flame'}
+                modes={['Flame']}
+                pixelScale={pixelScale}
+                settings={settings}
+                style={plotStyle} />
+            )
+
+          }
           <div style={{ display: 'flex', flexDirection: 'row' }}>
             <SliderWithTooltip
               onChange={this.handleAmount}
@@ -173,7 +195,7 @@ export class IntroDemo extends Component {
               value={amount}
             />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
             <label style={{ flex: 150, margin: '10px 25px 10px 25px' }}>
               <Checkbox
                 defaultChecked={1}
@@ -188,6 +210,11 @@ export class IntroDemo extends Component {
                 onChange={this.handleEmphNZ} />
               <span> emphasize non-zero</span>
             </label>
+              <button
+              style={{ flex: 150, margin: '10px 25px 10px 25px' }}
+                onClick={this.handleIcicle}>
+                {showIcicle ? <span>Heatmap/<b>Icicle</b></span> : <span><b>Heatmap</b>/Icicle</span>}
+              </button>
           </div>
         </div>
       </RemountOnResize>
