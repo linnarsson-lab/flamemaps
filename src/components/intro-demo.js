@@ -140,7 +140,9 @@ export class IntroDemo extends Component {
     // this lets us scale below 800 pixels and still mainting
     // _some_ form of consistency.
     if (view) {
-      const pixelScale = this.state.pixelScale * view.clientWidth / 800;
+      let { pixelScale } = this.props;
+      pixelScale = pixelScale !== undefined ? pixelScale : 4;
+      pixelScale = pixelScale * view.clientWidth / 800;
       this.setState({ view, pixelScale });
     }
   }
@@ -160,6 +162,8 @@ export class IntroDemo extends Component {
     const plotStyle = { height: '100px', margin: '5px 0px 5px 0px' };
     return (
       <RemountOnResize>
+        <div
+          key='extra_nesting'>
         <div
           key='intro_demo'
           ref={this.mountedView}>
@@ -250,6 +254,7 @@ export class IntroDemo extends Component {
               {showIcicle ? <span>Flame/<b>Icicle</b></span> : <span><b>Flame</b>/Icicle</span>}
             </button>
           </div>
+        </div>
         </div>
       </RemountOnResize>
     );
