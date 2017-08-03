@@ -213,7 +213,7 @@ width,
                <button
                   style={{ flex: 100, margin: '10px 25px 10px 25px' }}
                   onClick={this.handleIcicle}>
-                  {showIcicle ? <span>Heatmap/<b>Icicle</b></span> : <span><b>Heatmap</b>/Icicle</span>}
+                  {showIcicle ? <span>Flame/<b>Icicle</b></span> : <span><b>Flame</b>/Icicle</span>}
                </button>
             </div>
          </div>

@@ -8,9 +8,11 @@ import { RemountOnResize } from './remount';
 
 import { Plot } from './plot';
 
-import { data } from '../lib/data';
+import { data, datamap } from '../lib/data';
 
 const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
+
+
 
 export class IntroDemo extends Component {
   constructor(props) {
@@ -23,45 +25,29 @@ export class IntroDemo extends Component {
     this.handleIcicle = this.handleIcicle.bind(this);
     this.mountedView = this.mountedView.bind(this);
 
-    let datamap = {};
-    const dataselect = (
-      <label>
-        Select gene data: <select onChange={this.handleSelect} defaultValue='Meg3'>
-          {
-            data.map((attr) => {
-              datamap[attr.name] = attr;
-              return (
-                <option
-                  key={attr.name}
-                  value={attr.name}>
-                  {attr.name}
-                </option>
-              );
-            })
-          }
-        </select>
-      </label>
-    );
+    let { pixelScale, amount, gene, settings } = props;
+    pixelScale = pixelScale !== undefined ? pixelScale : 4;
+    amount = amount !== undefined ? amount : 100;
+    const selected = gene || 'Meg3';
 
-    const amount = props.amount || 100;
-    let { logScale, emphasizeNonZero, showIcicle } = props.settings || {};
+    let { logScale, emphasizeNonZero, showIcicle } = settings || {};
     logScale = logScale === undefined || logScale;
     emphasizeNonZero = emphasizeNonZero === undefined || emphasizeNonZero;
-
     showIcicle = showIcicle === undefined ? false : showIcicle;
-    const selected = data[9];
-    const attr = Object.assign({}, selected,
+
+    const selected_attr = datamap[selected];
+    const attr = Object.assign({}, selected_attr,
       {
-        name: `${selected.name}, first ${amount} cells of 3005`,
-        data: selected.data.slice(0, amount),
+        name: `${selected_attr.name}, first ${amount} cells of 3005`,
+        data: selected_attr.data.slice(0, amount),
       }
     );
 
+
     this.state = {
-      pixelScale: 4,
-      datamap,
-      dataselect,
+      pixelScale,
       selected,
+      selected_attr,
       attr,
       amount,
       logScale,
@@ -70,25 +56,27 @@ export class IntroDemo extends Component {
     };
   }
 
+
   handleSelect(event) {
-    const { amount, datamap } = this.state;
-    const selected = datamap[event.target.value || "Meg3"];
-    const attr = Object.assign({}, selected,
+    const { amount } = this.state;
+    const selected = event.target.value || "Meg3";
+    const selected_attr = datamap[selected];
+    const attr = Object.assign({}, selected_attr,
       {
-        name: `${selected.name}, first ${amount} cells of 3005`,
-        data: selected.data.slice(0, amount),
+        name: `${selected_attr.name}, first ${amount} cells of 3005`,
+        data: selected_attr.data.slice(0, amount),
       });
-    this.setState({ selected, attr });
+    this.setState({ selected, selected_attr, attr });
   }
 
   handleAmount(value) {
     const amount = Math.max(Math.min(3005, value | 0), 100);
 
-    let { attr, selected } = this.state;
-    attr = Object.assign({}, selected,
+    let { attr, selected_attr } = this.state;
+    attr = Object.assign({}, selected_attr,
       {
-        name: `${selected.name}, first ${amount} cells of 3005`,
-        data: selected.data.slice(0, amount),
+        name: `${selected_attr.name}, first ${amount} cells of 3005`,
+        data: selected_attr.data.slice(0, amount),
       })
 
     this.setState({ amount, attr })
@@ -108,28 +96,58 @@ export class IntroDemo extends Component {
     this.setState({ showIcicle })
   }
 
+  componentWillReceiveProps(nextProps) {
+    let { amount, gene, settings } = nextProps;
+    amount = amount !== undefined ? amount : 100;
+    const selected = gene || this.state.selected;
+
+    let { selected_attr } = this.state;
+    let newState = {};
+
+    const { logScale, emphasizeNonZero, showIcicle } = settings || {};
+    if (logScale !== undefined) {
+      newState.logScale = logScale;
+    }
+    if (emphasizeNonZero !== undefined) {
+      newState.emphasizeNonZero = emphasizeNonZero;
+    }
+    if (showIcicle !== undefined) {
+      newState.showIcicle = showIcicle;
+    }
+
+    if (selected !== this.state.selected) {
+      newState.selected = selected;
+      selected_attr = datamap[selected];
+      newState.selected_attr = selected_attr;
+    }
+    if (amount !== this.state.amount) {
+      newState.amount = amount;
+    }
+
+    if (Object.keys(newState).length) {
+      newState.attr = Object.assign({}, selected_attr,
+        {
+          name: `${selected_attr.name}, first ${amount} cells of 3005`,
+          data: selected_attr.data.slice(0, amount),
+        }
+      );
+      this.setState(newState);
+    }
+  }
+
   mountedView(view) {
     // Similar to the trick used in the Canvas component,
     // this lets us scale below 800 pixels and still mainting
     // _some_ form of consistency.
     if (view) {
-      const pixelScale = 4 * view.clientWidth / 800;
+      const pixelScale = this.state.pixelScale * view.clientWidth / 800;
       this.setState({ view, pixelScale });
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.amount) {
-      this.handleAmount(nextProps.amount);
-    }
-    if (nextProps.logScale) {
-      this.handleLog(nextProps.logScale);
     }
   }
 
   render() {
     const {
-      dataselect,
+      selected,
       attr,
       amount,
       logScale,
@@ -142,8 +160,24 @@ export class IntroDemo extends Component {
     const plotStyle = { height: '100px', margin: '5px 0px 5px 0px' };
     return (
       <RemountOnResize>
-        <div ref={this.mountedView}>
-          {dataselect}
+        <div
+          key='intro_demo'
+          ref={this.mountedView}>
+          <label>
+            Select gene data: <select onChange={this.handleSelect} value={selected}>
+              {
+                data.map((attr) => {
+                  return (
+                    <option
+                      key={attr.name}
+                      value={attr.name}>
+                      {attr.name}
+                    </option>
+                  );
+                })
+              }
+            </select>
+          </label>
           <Plot
             attr={attr}
             key={'intro_demo_bar'}
@@ -210,11 +244,11 @@ export class IntroDemo extends Component {
                 onChange={this.handleEmphNZ} />
               <span> emphasize non-zero</span>
             </label>
-              <button
+            <button
               style={{ flex: 150, margin: '10px 25px 10px 25px' }}
-                onClick={this.handleIcicle}>
-                {showIcicle ? <span>Heatmap/<b>Icicle</b></span> : <span><b>Heatmap</b>/Icicle</span>}
-              </button>
+              onClick={this.handleIcicle}>
+              {showIcicle ? <span>Flame/<b>Icicle</b></span> : <span><b>Flame</b>/Icicle</span>}
+            </button>
           </div>
         </div>
       </RemountOnResize>

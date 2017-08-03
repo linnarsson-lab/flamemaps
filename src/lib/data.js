@@ -61881,4 +61881,11 @@ export const data = [
 	}
 ];
 
-export const attr_hexb = data[12];
+let _datamap = {};
+for (let i = 0; i < data.length; i++){
+	const attr = data[i];
+	_datamap[attr.name] = attr;
+}
+export const datamap = _datamap;
+
+export const data_meg3 = _datamap['Meg3'];
