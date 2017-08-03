@@ -35,8 +35,7 @@
         can tell), originally designed at <a href='http://linnarssonlab.org/'>Linnarsson Lab</a> to cope with issues that
         arose due to having far more raw data to show than available screen resolution. Specifically, they avoid issues of
         smoothing out information through averaging. In a flame map, the "height" of a column shows the ratio of zero to
-        non-zero values in that column. The heat map gradient of the column shows the actual values. Below you can compare
-        a few <a href='https://en.wikipedia.org/wiki/Small_multiple'>small multiples</a> of the same data displayed as bar
+        non-zero values in that column. The heat map gradient of the column shows the actual values. Below a few example <a href='https://en.wikipedia.org/wiki/Small_multiple'>small multiples</a> of the same data displayed are as bar
         graphs, heat maps, and flame/icicle maps.
       </p>
       <div>
@@ -45,8 +44,8 @@
       <p>
         <i>(The data is taken from <a href='http://science.sciencemag.org/content/347/6226/1138'>"Cell types in the mouse cortex and hippocampus revealed by single-cell RNA-seq", A Zeisel, AB Muñoz-Manchado, et al. 2015</a>. However, the data itself does not really matter for what we are trying to demonstrate)</i>
       </p>
-      <p>As you probably guessed, icicle maps are just upside-down flame maps with a different color scale. Since they are identical
-        otherwise, I will use flame maps as the standard example from now on.</p>
+      <p>Note that icicle maps are just upside-down flame maps with a different color scale. As they are identical
+        otherwise, we will use flame maps as the standard example from now on.</p>
       <h2>Original Scientific Context</h2>
       <p>
         Flame and icicle maps were designed to solve a specific problem, and knowing the problem they originally tried to solve may
@@ -59,16 +58,15 @@
       <ul>
         <li>Take a sample of cells (the biological kind)</li>
         <li>Measure gene expressions for each cell: <i>"is gene Mog active, is gene Plp1 active, etc."</i>. This is measured
-          by counting RNA molecules for that gene (if you don't know what RNA is, in <i><u>this context</u></i> you can think
-          of it as "active copies of that gene")</li>
+          by counting RNA molecules for that gene (for those unfamiliar with this field of biology, "RNA molecules" can be thought of as "active copies of that gene" here)/li>
         <li>Try to identify which genes are associated with which cell type</li>
         <li>Combine this with sampling from different developmental stages to untangle the genetic side of cell development</li>
       </ul>
       <p>
         The idea is to identify cell types by their active genes (for example, <a href='http://ki.se/en/news/special-nerve-cells-cause-goose-bumps-and-nipple-erection'>discovering new types of neurons</a>).
         Since we don't know <i>a priori</i> what the relevant genes will be, the number of genes measured is essentially
-        "as much as you can get away with" (typically tens of thousands). Similarly, for purposes of statistical strength,
-        the cell sample size is "as big as you can get away with", which is rapidly increasing in this field: data sets of
+        "as much as one can get away with" (typically tens of thousands). Similarly, for purposes of statistical strength,
+        the cell sample size is "as big as one can get away with", which is rapidly increasing in this field: data sets of
         tens of thousands of cells are common now, hundreds of thousands are starting to pop up and surely a million is not
         far off.
       </p>
@@ -93,7 +91,7 @@
       </p>
       <h2>Issues introduced by grouping and averaging</h2>
       <p>
-        Three interactive plots should be displayed below, one bar graph, one heat map, and one flame map. The plots show levels
+        Three interactive plots should be displayed below: one bar graph, one heat map, and one flame map. The plots show levels
         of gene expression in a selection of mouse cells for a given gene.
       </p>
       <p>For heat maps and flame maps, missing values are displayed as grey, zero values are displayed as white, and non-zero
@@ -108,32 +106,30 @@
       <p>Try changing the number of plotted cells, while predicting how different amounts of data affect the shape plot itself:</p>
       <p><i>{Introduction Interactive Demo}</i></p>
       <p>
-        Did you notice the change once the number of cells exceeds 200? You may want to increase the value
-        one step at a time to really see the effect. How the graphs change when you wiggle the value around 300
-        is also very revealing. And for the sake of completeness, try 2995 to 3005.
+        Notice the change once the number of cells exceeds 200. How the graphs change when wiggling the value around 300
+        is also very revealing.
       </p>
       <h3>Large relative differences when averaging small group sizes</h3>
       <p>
-        Because our maximum of 200 columns, larger data sets require grouping the data. For the bar graph and heat map we typically
+        Any data set larger than the maximum amount of columns requires grouping the data, in this case any data set bigger than 200 cells. For the bar graph and heat map we typically
         group the data as evenly as possible, then plot the average value per group (that is, per column).
       </p>
       <p>
         Compare plotting 298, 299, and 300 cells.
-        In this range the columns alternate between grouping one and two data points. As you can see, a tiny bit of wiggling
+        In this range the columns alternate between grouping one and two data points. A tiny bit of wiggling
         has a big effect on how the data is distributed. To make matters worse, for bar graphs and heat maps there is no
-        direct visual way of telling how this is done, hiding it from the reader. Admittedly, the data-to-group ratio here
+        direct visual way of telling how this is done, hiding it from the reader. Admittedly, the data-to-group ratio in this example
         is specifically chosen to maximise that effect, but it illustrates the point.
       </p>
       <h3>Averaging away information</h3>
       <p>
-        Often, averaging is a good thing, smoothing away noise and outliers. In our case it can hide useful information. Often it
-        is important to know in <i>how many</i> cells a gene is expressed. In other words: the sparsity of the data.
+        Often, averaging is a good thing, smoothing away noise and outliers. In our case it can hide useful information. It may be important to know in <i>how many</i> cells a gene is expressed. In other words: the sparsity of the data.
         This is a separate thing from the actual value of expression. Averaging reduces these two types of information to
         one number.
       </p>
       <p>
-        You may also have noticed that the bar graphs tends to decrease in height when there is more data per column (try Hexb, without
-        log scaling, and watch the left values,). Because our data is sparse, averaging tends to skew values towards zero.
+        The bar graphs also tend to decrease in height when there is more data per column, and the heat maps tend to fade (try Hexb, without
+        log scaling, and slowly increase values while while observing the left side of the plot). Because our data is sparse, averaging tends to skew values towards zero.
         When we have very large data sets, this can even mask non-zero values, although log-scaling the vertical axis helps
         a bit here.
       </p>
@@ -141,7 +137,7 @@
         <i>(Aside from using a log-scale, there are more sophisticated alternatives to averaging that can help as well, like <a href='https://skemman.is/handle/1946/15343'>Steinarsson's Largest Triangle Three Buckets algorithm</a>, but they have their own trade-offs)</i>
       </p>
       <h2>How flame maps attempt to address these issues</h2>
-      <p>The aforementiond problems are simplified examples of the problems highlighted by <a href='https://en.wikipedia.org/wiki/Anscombe%27s_quartet'>Anscombe's Quartet</a>,
+      <p>The aforementioned problems are simplified examples of the problems highlighted by <a href='https://en.wikipedia.org/wiki/Anscombe%27s_quartet'>Anscombe's Quartet</a>,
         or the more recent <a href='https://www.autodeskresearch.com/publications/samestats'>'Datasaurus Dozen'</a> by Matejka
         and Fitzmaurice. Like the graphs in these papers, the most straight-forward solution would be representing the raw
         data being grouped.
@@ -198,7 +194,7 @@
 ]
         </pre>
       <p>
-        These are then sorted:
+        The values in the groups are then sorted:
       </p>
       <pre>
 [
@@ -296,13 +292,13 @@
       <h3>Aliasing</h3>
       <p>
         Grouping data inherently makes it susceptible to <a href='https://en.wikipedia.org/wiki/Aliasing'>aliasing issues</a>.
-        Below is an interactive that demonstrate this the effects. The data alternates between one and zero. You can tweak
+        Below is an interactive that demonstrate this the effects. The data alternates between one and zero. Tweak
         the values of how quickly it alternates, with which offset, and with which plotsettings, to explore the aliasing
         issues that can arise:
       </p>
       <p><i>{Aliasing Examples}</i></p>
       <p>
-        As you can see, the data only really makes sense when we zoom in far enough that each cell is plotted separately. However,
+        As can be seen, the data only really makes sense when we zoom in far enough that each cell is plotted separately. However,
         bar graphs and heat maps perform just as poorly.
       </p>
       <p>
@@ -352,7 +348,7 @@
       </p>
       <h2>Implementations</h2>
       <p><i>
-          I'll switch to first person here, because this is a WIP. For now, you're basically looking at the only implementation. Sorry. The source code for this website be found at:
+          I'll switch to first person here, because this is a WIP. For now, this website is the only implementation. Sorry. The source code for it can be found at:
           </i></p>
       <p><a href='https://github.com/linnarsson-lab/flamemaps'>
           https://github.com/linnarsson-lab/flamemaps
