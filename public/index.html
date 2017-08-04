@@ -35,7 +35,9 @@
         can tell), originally designed at <a href='http://linnarssonlab.org/'>Linnarsson Lab</a> to cope with issues that
         arose due to having far more raw data to show than available screen resolution. Specifically, they avoid issues of
         smoothing out information through averaging. In a flame map, the "height" of a column shows the ratio of zero to
-        non-zero values in that column. The heat map gradient of the column shows the actual values. Below a few example <a href='https://en.wikipedia.org/wiki/Small_multiple'>small multiples</a> of bar graphs, heat maps, and flame/icicle maps are displayed, using the same data.
+        non-zero values in that column. The heat map gradient of the column shows the actual values. Below a few example
+        <a href='https://en.wikipedia.org/wiki/Small_multiple'>small multiples</a> of bar graphs, heat maps, and flame/icicle
+        maps are displayed, using the same data.
       </p>
       <div>
         <img src="/flamemaps/static/images/splash-static2.png" alt="Introduction Small Multiples" />
@@ -43,8 +45,8 @@
       <p>
         <i>(The data is taken from <a href='http://science.sciencemag.org/content/347/6226/1138'>"Cell types in the mouse cortex and hippocampus revealed by single-cell RNA-seq", A Zeisel, AB Muñoz-Manchado, et al. 2015</a>. However, the data itself does not really matter for what we are trying to demonstrate)</i>
       </p>
-      <p>Note that icicle maps are just upside-down flame maps with a different color scale. As they are identical
-        otherwise, we will use flame maps as the standard example from now on.</p>
+      <p>Note that icicle maps are just upside-down flame maps with a different color scale. As they are identical otherwise,
+        we will use flame maps as the standard example from now on.</p>
       <h2>Original Scientific Context</h2>
       <p>
         Flame and icicle maps were designed to solve a specific problem, and knowing the problem they originally tried to solve may
@@ -57,9 +59,10 @@
       <ul>
         <li>Take a sample of cells (the biological kind)</li>
         <li>Measure gene expressions for each cell: <i>"is gene Mog active, is gene Plp1 active, etc."</i>. This is measured
-          by counting RNA molecules for that gene (for those unfamiliar with this field of biology, "RNA molecules" can be thought of as "active copies of that gene" here)/li>
-        <li>Try to identify which genes are associated with which cell type</li>
-        <li>Combine this with sampling from different developmental stages to untangle the genetic side of cell development</li>
+          by counting RNA molecules for that gene (for those unfamiliar with this field of biology, "RNA molecules" can be
+          thought of as "active copies of that gene" here)/li>
+          <li>Try to identify which genes are associated with which cell type</li>
+          <li>Combine this with sampling from different developmental stages to untangle the genetic side of cell development</li>
       </ul>
       <p>
         The idea is to identify cell types by their active genes (for example, <a href='http://ki.se/en/news/special-nerve-cells-cause-goose-bumps-and-nipple-erection'>discovering new types of neurons</a>).
@@ -105,32 +108,33 @@
       <p>Try changing the number of plotted cells, while predicting how different amounts of data affect the shape plot itself:</p>
       <p><i>{Introduction Interactive Demo}</i></p>
       <p>
-        Notice the change once the number of cells exceeds 200. How the graphs change when wiggling the value around 300
-        is also very revealing.
+        Notice the change once the number of cells exceeds 200. How the graphs change when wiggling the value around 300 is also
+        very revealing.
       </p>
       <h3>Large relative differences when averaging small group sizes</h3>
       <p>
-        Any data set larger than the maximum amount of columns requires grouping the data, in this case any data set bigger than 200 cells. For the bar graph and heat map we typically
-        group the data as evenly as possible, then plot the average value per group (that is, per column).
+        Any data set larger than the maximum amount of columns requires grouping the data, in this case any data set bigger than
+        200 cells. For the bar graph and heat map we typically group the data as evenly as possible, then plot the average
+        value per group (that is, per column).
       </p>
       <p>
-        Compare plotting 298, 299, and 300 cells.
-        In this range the columns alternate between grouping one and two data points. A tiny bit of wiggling
-        has a big effect on how the data is distributed. To make matters worse, for bar graphs and heat maps there is no
-        direct visual way of telling how this is done, hiding it from the reader. Admittedly, the data-to-group ratio in this example
-        is specifically chosen to maximise that effect, but it illustrates the point.
+        Compare plotting 298, 299, and 300 cells. In this range the columns alternate between grouping one and two data points. A
+        tiny bit of wiggling has a big effect on how the data is distributed. To make matters worse, for bar graphs and heat
+        maps there is no direct visual way of telling how this is done, hiding it from the reader. Admittedly, the data-to-group
+        ratio in this example is specifically chosen to maximise that effect, but it illustrates the point.
       </p>
       <h3>Averaging away information</h3>
       <p>
-        Often, averaging is a good thing, smoothing away noise and outliers. In our case it can hide useful information. It may be important to know in <i>how many</i> cells a gene is expressed. In other words: the sparsity of the data.
+        Often, averaging is a good thing, smoothing away noise and outliers. In our case it can hide useful information. It may be
+        important to know in <i>how many</i> cells a gene is expressed. In other words: the sparsity of the data.
         This is a separate thing from the actual value of expression. Averaging reduces these two types of information to
         one number.
       </p>
       <p>
-        The bar graphs also tend to decrease in height when there is more data per column, and the heat maps tend to fade (try Hexb, without
-        log scaling, and slowly increase values while while observing the left side of the plot). Because our data is sparse, averaging tends to skew values towards zero.
-        When we have very large data sets, this can even mask non-zero values, although log-scaling the vertical axis helps
-        a bit here.
+        The bar graphs also tend to decrease in height when there is more data per column, and the heat maps tend to fade (try Hexb,
+        without log scaling, and slowly increase values while while observing the left side of the plot). Because our data
+        is sparse, averaging tends to skew values towards zero. When we have very large data sets, this can even mask non-zero
+        values, although log-scaling the vertical axis helps a bit here.
       </p>
       <p>
         <i>(Aside from using a log-scale, there are more sophisticated alternatives to averaging that can help as well, like <a href='https://skemman.is/handle/1946/15343'>Steinarsson's Largest Triangle Three Buckets algorithm</a>, but they have their own trade-offs)</i>
@@ -241,13 +245,13 @@
         things, effectively having one extra "dimension" at their disposal to communicate information.
       </p>
       <p>
-        <b>In a flame map, the "height" of a column shows the count of non-zero values in that column. The gradient of the column gives an impression of the actual values</b> (height is fixed at the biggest column size, and for groups with less data a grey block signals the missing element).
+        <b>In a flame map, the "height" of a column shows the count of non-zero values in that column. The gradient of the column gives an impression of the actual values</b>        (height is fixed at the biggest column size, and for groups with less data a grey block signals the missing element).
       </p>
       <p>
-        For example, when plotting between 201 and 400 cells in the example
-        above, we can immediately see when we are grouping two values or one, and what their separate values are. Meg3 is
-        another good example of where this adds information: there is a chunk where nearly all cells are non-zero, but expression
-        level varies. This could not be discerned on the heat map or bar graph.
+        For example, when plotting between 201 and 400 cells in the example above, we can immediately see when we are grouping two
+        values or one, and what their separate values are. Meg3 is another good example of where this adds information: there
+        is a chunk where nearly all cells are non-zero, but expression level varies. This could not be discerned on the heat
+        map or bar graph.
       </p>
       <p>
         Even when we have more data per column than vertical pixels, and are therefore forced to average data per pixel, this is
@@ -257,9 +261,8 @@
       <h3>Dealing with very sparse data</h3>
       <p>
         Sometimes the data is so sparse that only the bottom tile of a flame map column contains non-zero values. If our columns
-        are only two to four data points high (400, 600 and 800
-        cells in the above demo), these are still readable, but when the data-to-pixel ratio is bigger, we end up with our
-        sparse-data averaging problem again.
+        are only two to four data points high (400, 600 and 800 cells in the above demo), these are still readable, but when
+        the data-to-pixel ratio is bigger, we end up with our sparse-data averaging problem again.
       </p>
       <p>For example, in the small multiple that opened the article, each cell has only one or two pixels. With sparse data,
         this makes non-zero values hard to spot.
@@ -291,9 +294,9 @@
       <h3>Aliasing</h3>
       <p>
         Grouping data inherently makes it susceptible to <a href='https://en.wikipedia.org/wiki/Aliasing'>aliasing issues</a>.
-        Below is an interactive that demonstrate this the effects. The data alternates between one and zero. Tweak
-        the values of how quickly it alternates, with which offset, and with which plotsettings, to explore the aliasing
-        issues that can arise:
+        Below is an interactive that demonstrate this the effects. The data alternates between one and zero. Tweak the values
+        of how quickly it alternates, with which offset, and with which plotsettings, to explore the aliasing issues that
+        can arise:
       </p>
       <p><i>{Aliasing Examples}</i></p>
       <p>
@@ -319,24 +322,26 @@
         like clipping, tresholding and log-scaling the data may also help.
       </p>
       <h3>Optical illusions</h3>
+
       <p>
-        It is plausible that certain colour gradient arrangements can lead to optical illusions, like the <a href='https://en.wikipedia.org/wiki/Contrast_effect'>simultaneous contrast effect</a>,
+        As of writing this is purely speculative, but it seems plausible that certain colour gradient arrangements can lead to optical
+        illusions, like the <a href='https://en.wikipedia.org/wiki/Contrast_effect'>simultaneous contrast effect</a>,
         <a href='https://en.wikipedia.org/wiki/Mach_bands'>Mach bands</a>, and the <a href='https://en.wikipedia.org/wiki/Watercolour_illusion'>watercolour illusion</a>.
-        Similarly, the optical illusions related to perceived sizes being affected by nearby sizes are well documented -
-        i.e. the <a href='https://en.wikipedia.org/wiki/Ebbinghaus_illusion'>Ebbinghaus illusion</a>.
+        Similarly, optical illusions related to perceived sizes being affected by nearby sizes are well documented - i.e.
+        the <a href='https://en.wikipedia.org/wiki/Ebbinghaus_illusion'>Ebbinghaus illusion</a>.
       </p>
       <p>
-        This could interfere with the correct interpretation of the underlying data. Of course, both heat maps and bar graphs would
-        also be susceptible to these types of illusions, but since flame maps combine size and colour they might be more
-        susceptible to them, or suffer from novel illusions that arise from the combination. However, we have not really
-        looked into this, so this is purely speculative.
+        We believe this is worth investigating, as these kinds of optical illusions would interfere with the correct interpretation
+        of the underlying data. Of course, both heat maps and bar graphs may also have such problems, but since flame maps
+        combine size and colour they might be more susceptible to them, or suffer from novel illusions that arise from the
+        combination. It may also be interesting to see if flame maps and icicle maps perform differently in this regard.
       </p>
       <h2>Summary</h2>
       <p>When compared to traditional bar graphs and heat maps, due to not averaging grouped data, flame maps let us:</p>
       <ul>
         <li>discern whether grouped data contain many low values, or a few high values</li>
         <li>discern the ratio zero to non-zero values</li>
-        <li>spot the presence of non-zero values when data is extremely sparse</li>
+        <li>empasize the presence of non-zero values when data is extremely sparse</li>
       </ul>
       <p>In situations where these are desired properties, and a very precise distinction between high and low values is not
         required, we think they will provide advantages.</p>
@@ -359,9 +364,8 @@
       <Demos />
       <h2>Acknowledgements</h2>
       <p>
-        The author would like to thank the whole <a href='http://linnarssonlab.org/people/'>Linnarsson Lab group</a> for
-        early feedback on these plots, and Sten Linnarsson in particular for being given the creative freedom to explore
-        this side-project. We thank <a href='https://twitter.com/xangregg'>Xan Gregg</a> for suggesting the Icicle Plot variant.
+        The author would like to thank his colleagues at the <a href='http://linnarssonlab.org/people/'>Linnarsson Lab group</a>        for early feedback on these plots, and Sten Linnarsson in particular for being given the freedom to explore this
+        side-project. We thank <a href='https://twitter.com/xangregg'>Xan Gregg</a> for suggesting the Icicle Plot variant.
         Finally, we thank <a href='http://www.iysik.com/'>Stefan Hoj-Edwards</a> at The Roslin Institute, University of Edinburgh,
         for discussions that helped tremendously with finding and correcting sloppy wording and confusing descriptions.
       </p>

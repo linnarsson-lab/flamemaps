@@ -325,17 +325,17 @@ class App extends PureComponent {
         </p>
         <h3>Optical illusions</h3>
         <p>
-          It is plausible that certain colour gradient arrangements can lead to optical illusions, like the <a href='https://en.wikipedia.org/wiki/Contrast_effect'>simultaneous contrast effect</a>, <a href='https://en.wikipedia.org/wiki/Mach_bands'>Mach bands</a>, and the <a href='https://en.wikipedia.org/wiki/Watercolour_illusion'>watercolour illusion</a>. Similarly, the optical illusions related to perceived sizes being affected by nearby sizes are well documented - i.e. the <a href='https://en.wikipedia.org/wiki/Ebbinghaus_illusion'>Ebbinghaus illusion</a>.
+          As of writing this is purely speculative, but it seems plausible that certain colour gradient arrangements can lead to optical illusions, like the <a href='https://en.wikipedia.org/wiki/Contrast_effect'>simultaneous contrast effect</a>, <a href='https://en.wikipedia.org/wiki/Mach_bands'>Mach bands</a>, and the <a href='https://en.wikipedia.org/wiki/Watercolour_illusion'>watercolour illusion</a>. Similarly, optical illusions related to perceived sizes being affected by nearby sizes are well documented - i.e. the <a href='https://en.wikipedia.org/wiki/Ebbinghaus_illusion'>Ebbinghaus illusion</a>.
         </p>
         <p>
-          This could interfere with the correct interpretation of the underlying data. Of course, both heat maps and bar graphs would also be susceptible to these types of illusions, but since flame maps combine size and colour they might be more susceptible to them, or suffer from novel illusions that arise from the combination. However, we have not really looked into this, so this is purely speculative.
+          We believe this is worth investigating, as these kinds of optical illusions would interfere with the correct interpretation of the underlying data. Of course, both heat maps and bar graphs may also have such problems, but since flame maps combine size and colour they might be more susceptible to them, or suffer from novel illusions that arise from the combination. It may also be interesting to see if flame maps and icicle maps perform differently in this regard.
         </p>
         <h2>Summary</h2>
         <p>When compared to traditional bar graphs and heat maps, due to not averaging grouped data, flame maps let us:</p>
         <ul>
           <li>discern whether grouped data contain many low values, or a few high values</li>
           <li>discern the ratio zero to non-zero values</li>
-          <li>spot the presence of non-zero values when data is extremely sparse</li>
+          <li>emphasize the presence of non-zero values when data is extremely sparse</li>
         </ul>
         <p>In situations where these are desired properties, and a very precise distinction between high and low values is not required, we think they will provide advantages.</p>
         <p>
@@ -349,13 +349,13 @@ class App extends PureComponent {
           https://github.com/linnarsson-lab/flamemaps
         </a></p>
         <p><i>
-          Flame maps were created for a for-now in-house web app. For performance reasons they were implemented in raw javascript and html5 canvas (not even a framework like d3.js was used). This demo page is based on repurposed plotting code from this web app. I do not know PyPlot, R or any other plotting library really, and currently don't have the time it would take to learn them well enough to implement these plots efficiently. So I figured it made more sense to write a convincing demonstration page and hope that  others will agree these plots are useful, in the hope that the various plotting library wizards out there take over from there. And then Gioele can stop wishing I'll learn how to use PyPlot to implement this for him - Job van der Zwan
+          Flame maps were created for a for-now in-house web app. For performance reasons they were implemented in raw javascript and html5 canvas (so not even frameworks like d3.js were used). This demo page is based on repurposed plotting code from this web app. I do not know PyPlot, R or any other plotting library, and currently don't have the time it would take to learn them well enough to implement these plots efficiently. So I figured it made more sense to write a convincing demonstration page and hope that others will agree these plots are useful, in the hope that the various plotting library wizards out there take over from there. And then Gioele can stop wishing I'll learn how to use PyPlot to implement this for him - Job van der Zwan
           </i></p>
         <h2>Interactive Demos</h2>
         <Demos />
         <h2>Acknowledgements</h2>
         <p>
-          The author would like to thank the whole <a href='http://linnarssonlab.org/people/'>Linnarsson Lab group</a> for early feedback on these plots, and Sten Linnarsson in particular for being given the creative freedom to explore this side-project. We thank <a href='https://twitter.com/xangregg'>Xan Gregg</a> for suggesting the Icicle Plot variant. Finally, we thank <a href='http://www.iysik.com/'>Stefan Hoj-Edwards</a> at The Roslin Institute, University of Edinburgh, for discussions that helped tremendously with finding and correcting sloppy wording and confusing descriptions.
+          The author would like to thank his colleagues at the <a href='http://linnarssonlab.org/people/'>Linnarsson Lab group</a> for early feedback on these plots, and Sten Linnarsson in particular for being given the freedom to explore this side-project. We thank <a href='https://twitter.com/xangregg'>Xan Gregg</a> for suggesting the Icicle Plot variant. Finally, we thank <a href='http://www.iysik.com/'>Stefan Hoj-Edwards</a> at The Roslin Institute, University of Edinburgh, for discussions that helped tremendously with finding and correcting sloppy wording and confusing descriptions.
         </p>
       </article>
     );
