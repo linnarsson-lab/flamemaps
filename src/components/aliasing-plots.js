@@ -125,6 +125,7 @@ export class AliasingPlots extends Component {
                      max={8000}
                      defaultValue={length}
                      value={length}
+                     focusOnUpDown={false}
                   />
                   <span>data length</span>
                </label>
@@ -147,6 +148,7 @@ export class AliasingPlots extends Component {
                      max={40}
                      defaultValue={width}
                      value={width}
+                     focusOnUpDown={false}
                   />
                   <span>zebra width</span>
                </label>
@@ -169,6 +171,7 @@ export class AliasingPlots extends Component {
                      max={40}
                      defaultValue={pixelScale}
                      value={pixelScale}
+                     focusOnUpDown={false}
                   />
                   <span>pixels/column</span>
                </label>
@@ -191,6 +194,7 @@ export class AliasingPlots extends Component {
                      max={39}
                      defaultValue={offset}
                      value={offset}
+                     focusOnUpDown={false}
                   />
                   <span>offset</span>
                </label>

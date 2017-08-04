@@ -164,97 +164,98 @@ export class IntroDemo extends Component {
       <RemountOnResize>
         <div
           key='extra_nesting'>
-        <div
-          key='intro_demo'
-          ref={this.mountedView}>
-          <label>
-            Select gene data: <select onChange={this.handleSelect} value={selected}>
-              {
-                data.map((attr) => {
-                  return (
-                    <option
-                      key={attr.name}
-                      value={attr.name}>
-                      {attr.name}
-                    </option>
-                  );
-                })
-              }
-            </select>
-          </label>
-          <Plot
-            attr={attr}
-            key={'intro_demo_bar'}
-            modes={['Bars']}
-            pixelScale={pixelScale}
-            settings={settings}
-            style={plotStyle} />
-          <Plot
-            attr={attr}
-            key={'intro_demo_heatmap'}
-            modes={['Heatmap']}
-            pixelScale={pixelScale}
-            settings={settings}
-            style={plotStyle} />
-          {showIcicle ? (
+          <div
+            key='intro_demo'
+            ref={this.mountedView}>
+            <label>
+              Select gene data: <select onChange={this.handleSelect} value={selected}>
+                {
+                  data.map((attr) => {
+                    return (
+                      <option
+                        key={attr.name}
+                        value={attr.name}>
+                        {attr.name}
+                      </option>
+                    );
+                  })
+                }
+              </select>
+            </label>
             <Plot
               attr={attr}
-              key={'intro_demo_icicle'}
-              modes={['Icicle']}
+              key={'intro_demo_bar'}
+              modes={['Bars']}
               pixelScale={pixelScale}
               settings={settings}
               style={plotStyle} />
-          ) : (
+            <Plot
+              attr={attr}
+              key={'intro_demo_heatmap'}
+              modes={['Heatmap']}
+              pixelScale={pixelScale}
+              settings={settings}
+              style={plotStyle} />
+            {showIcicle ? (
               <Plot
                 attr={attr}
-                key={'intro_demo_flame'}
-                modes={['Flame']}
+                key={'intro_demo_icicle'}
+                modes={['Icicle']}
                 pixelScale={pixelScale}
                 settings={settings}
                 style={plotStyle} />
-            )
+            ) : (
+                <Plot
+                  attr={attr}
+                  key={'intro_demo_flame'}
+                  modes={['Flame']}
+                  pixelScale={pixelScale}
+                  settings={settings}
+                  style={plotStyle} />
+              )
 
-          }
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <SliderWithTooltip
-              onChange={this.handleAmount}
-              style={{ flex: 300, margin: '10px 25px 10px 25px' }}
-              min={100}
-              max={3005}
-              defaultValue={amount}
-              value={amount}
-            />
-            <InputNumber
-              onChange={this.handleAmount}
-              style={{ flex: 100, margin: '10px 25px 10px 25px' }}
-              min={100}
-              max={3005}
-              defaultValue={amount}
-              value={amount}
-            />
+            }
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <SliderWithTooltip
+                onChange={this.handleAmount}
+                style={{ flex: 300, margin: '10px 25px 10px 25px' }}
+                min={100}
+                max={3005}
+                defaultValue={amount}
+                value={amount}
+              />
+              <InputNumber
+                onChange={this.handleAmount}
+                style={{ flex: 100, margin: '10px 25px 10px 25px' }}
+                min={100}
+                max={3005}
+                defaultValue={amount}
+                value={amount}
+                focusOnUpDown={false}
+              />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+              <label style={{ flex: 150, margin: '10px 25px 10px 25px' }}>
+                <Checkbox
+                  defaultChecked={1}
+                  checked={logScale ? 1 : 0}
+                  onChange={this.handleLog} />
+                <span> log<sub>2</sub> scale</span>
+              </label>
+              <label style={{ flex: 150, margin: '10px 25px 10px 25px' }}>
+                <Checkbox
+                  defaultChecked={1}
+                  checked={emphasizeNonZero ? 1 : 0}
+                  onChange={this.handleEmphNZ} />
+                <span> emphasize non-zero</span>
+              </label>
+              <button
+                style={{ flex: 150, margin: '10px 25px 10px 25px' }}
+                onClick={this.handleIcicle}>
+                {showIcicle ? <span>Flame/<b>Icicle</b></span> : <span><b>Flame</b>/Icicle</span>}
+              </button>
+            </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-            <label style={{ flex: 150, margin: '10px 25px 10px 25px' }}>
-              <Checkbox
-                defaultChecked={1}
-                checked={logScale ? 1 : 0}
-                onChange={this.handleLog} />
-              <span> log<sub>2</sub> scale</span>
-            </label>
-            <label style={{ flex: 150, margin: '10px 25px 10px 25px' }}>
-              <Checkbox
-                defaultChecked={1}
-                checked={emphasizeNonZero ? 1 : 0}
-                onChange={this.handleEmphNZ} />
-              <span> emphasize non-zero</span>
-            </label>
-            <button
-              style={{ flex: 150, margin: '10px 25px 10px 25px' }}
-              onClick={this.handleIcicle}>
-              {showIcicle ? <span>Flame/<b>Icicle</b></span> : <span><b>Flame</b>/Icicle</span>}
-            </button>
-          </div>
-        </div>
         </div>
       </RemountOnResize>
     );

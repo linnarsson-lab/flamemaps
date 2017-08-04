@@ -253,6 +253,7 @@ export class Demos extends PureComponent {
                            max={800}
                            defaultValue={width}
                            value={width}
+                           focusOnUpDown={false}
                         />
                         <span>&nbsp;plot&nbsp;width</span>
                      </label>
@@ -276,6 +277,7 @@ export class Demos extends PureComponent {
                            max={40}
                            defaultValue={pixelScale}
                            value={pixelScale}
+                           focusOnUpDown={false}
                         />
                         <span>&nbsp;pixels/column</span>
                      </label>
@@ -298,6 +300,7 @@ export class Demos extends PureComponent {
                               max={3005}
                               defaultValue={upperBound}
                               value={upperBound}
+                              focusOnUpDown={false}
                            />
                            <span>Upper bound</span>
                         </label>
@@ -308,6 +311,7 @@ export class Demos extends PureComponent {
                               max={2905}
                               defaultValue={lowerBound}
                               value={lowerBound}
+                              focusOnUpDown={false}
                            />
                            <span>Lower bound</span>
                         </label>
