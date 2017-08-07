@@ -5,24 +5,24 @@ import { RemountOnResize } from './remount';
 class CanvasComponent extends PureComponent {
 
 	draw() {
-		if (this.canvas && this.props.paint) {
-			const canvas = this.canvas;
+		const { canvas, props, state } = this;
+		if (canvas && props.paint) {
 			let context = canvas.getContext('2d');
 			// store width, height and ratio in context for paint functions
-			context.width = this.state.width;
-			context.height = this.state.height;
-			context.pixelRatio = this.state.ratio;
-			context.pixelScale = this.state.pixelScale;
+			context.width = state.width;
+			context.height = state.height;
+			context.pixelRatio = state.ratio;
+			context.pixelScale = state.pixelScale;
 			// should we clear the canvas every redraw?
-			if (this.props.clear) {
-				if (this.props.bgColor) {
-					context.fillStyle = this.props.bgColor;
-					context.fillRect(0, 0, canvas.width, canvas.height);
+			if (props.clear) {
+				if (props.bgColor) {
+					context.fillStyle = props.bgColor;
+					context.fillRect(0, 0, context.width, context.height);
 				} else {
-					context.clearRect(0, 0, canvas.width, canvas.height);
+					context.clearRect(0, 0, context.width, context.height);
 				}
 			}
-			this.props.paint(context);
+			props.paint(context);
 		}
 	}
 
@@ -36,7 +36,7 @@ class CanvasComponent extends PureComponent {
 		// Scaling lets us adjust the painter function for
 		// high density displays and zoomed browsers.
 		// Painter functions decide how to use scaling
-		// scaling on a case-by-case basis.
+		// on a case-by-case basis.
 		if (view) {
 			const pixelScale = this.props.pixelScale || 1;
 			const ratio = window.devicePixelRatio || 1;
@@ -94,8 +94,9 @@ export class Canvas extends PureComponent {
 		// If not given a width or height prop, make these fill their parent div
 		// This will implicitly set the size of the <Canvas> component, which
 		// will then call the passed paint function with the right dimensions.
-		let { width, height, style } = this.props;
-		style = style || {};
+		const { props } = this;
+		let style = Object.assign({}, props.style);
+		let { width, height } = props;
 		if (width) {
 			style['minWidth'] = (width | 0) + 'px';
 			style['maxWidth'] = (width | 0) + 'px';
@@ -108,15 +109,15 @@ export class Canvas extends PureComponent {
 			<RemountOnResize
 				/* Since canvas interferes with CSS layouting,
 				we unmount and remount it on resize events */
-				watchedVal={this.props.watchedVal}
+				watchedVal={props.watchedVal}
 			>
 				<CanvasComponent
-					paint={this.props.paint}
-					clear={this.props.clear}
-					bgColor={this.props.bgColor}
-					pixelScale={this.props.pixelScale}
-					redraw={this.props.redraw}
-					className={this.props.className}
+					paint={props.paint}
+					clear={props.clear}
+					bgColor={props.bgColor}
+					pixelScale={props.pixelScale}
+					redraw={props.redraw}
+					className={props.className}
 					style={style}
 				/>
 			</RemountOnResize>
