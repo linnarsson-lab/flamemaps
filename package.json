@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "http://linnarssonlab.org/flamemaps/",
   "dependencies": {
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.13",
     "mobile-detect": "^1.3.6",
     "purecss": "^1.0.0",
     "rc-checkbox": "^2.0.3",
